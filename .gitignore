@@ -3,7 +3,9 @@
 
 ## CUSTOM ###
 # ini
+/config/
 config/ini/*
+config/*
 test/*
 # Pycharm
 venv/*
