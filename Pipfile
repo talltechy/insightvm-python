@@ -9,6 +9,7 @@ python-dotenv = "*"
 
 [dev-packages]
 pylint-venv = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.11"
