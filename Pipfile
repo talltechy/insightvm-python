@@ -8,6 +8,7 @@ requests = "*"
 python-dotenv = "*"
 
 [dev-packages]
+pylint-venv = "*"
 
 [requires]
 python_version = "3.11"
