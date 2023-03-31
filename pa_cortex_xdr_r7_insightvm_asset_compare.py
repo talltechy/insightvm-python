@@ -1,5 +1,9 @@
 import requests
 import json
+import base64
+from dotenv import load_dotenv
+load_dotenv()
+
 # Python script that uses the Cortex XDR API and the InsightVM API
 # to check if assets in Cortex XDR are also found in InsightVM
 # This script is provided as-is without warranty of any kind.
@@ -7,15 +11,15 @@ import json
 # Use at your own risk.
 # Written by Matt Wyen (https://github.com/talltechy)
 
-# Set up Cortex XDR API credentials
-xdr_api_key = "YOUR_XDR_API_KEY"
-xdr_api_secret = "YOUR_XDR_API_SECRET"
-xdr_base_url = "https://api.paloaltonetworks.com"
+# Get Cortex XDR API credentials from environment variables
+xdr_api_key = os.getenv('XDR_API_KEY')
+xdr_api_secret = os.getenv('XDR_API_SECRET')
+xdr_base_url = os.getenv('XDR_BASE_URL')
 
-# Set up InsightVM API credentials
-insightvm_api_key = "YOUR_INSIGHTVM_API_KEY"
-insightvm_api_secret = "YOUR_INSIGHTVM_API_SECRET"
-insightvm_base_url = "https://YOUR_INSIGHTVM_INSTANCE"
+# Get InsightVM API credentials from environment variables
+insightvm_api_key = os.getenv('INSIGHTVM_API_KEY')
+insightvm_api_secret = os.getenv('INSIGHTVM_API_SECRET')
+insightvm_base_url = os.getenv('INSIGHTVM_BASE_URL')
 
 # Set up request headers
 xdr_headers = {
