@@ -2,8 +2,8 @@ import requests
 import json
 import base64
 import os
-from dotenv import load_dotenv
-load_dotenv()
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
 # Python script that uses the Cortex XDR API and the InsightVM API
 # to check if assets in Cortex XDR are also found in InsightVM
