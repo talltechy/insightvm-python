@@ -5,11 +5,9 @@ import secrets
 import string
 import hashlib
 from dotenv import load_dotenv
+from api_functions import get_xdr_credentials
 
 load_dotenv()  # loads environment variables from ".env" file
-
-def get_xdr_credentials():
-    return os.getenv('XDR_API_KEY'), os.getenv('XDR_API_KEY_ID'), os.getenv('XDR_BASE_URL')
 
 def generate_advanced_authentication(xdr_api_key, xdr_api_key_id, xdr_base_url):
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
