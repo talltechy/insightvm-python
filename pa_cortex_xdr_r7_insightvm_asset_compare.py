@@ -1,54 +1,52 @@
-import requests
-import json
 import base64
-import os
-import string
-import secrets
-from datetime import datetime, timezone
 import hashlib
+import json
+import os
+import secrets
+import string
+from datetime import datetime, timezone
 from typing import Optional
-from dotenv import load_dotenv, find_dotenv
+
+import requests
+from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
-# Python script that uses the Palo Alto Cortex XDR API and Rapid7 InsightVM API
-# This script is provided as-is without warranty of any kind.
-# Palo Alto Networks and Rapid7 do not support this script.
-# Use at your own risk.
-# Written by Matt Wyen (https://github.com/talltechy)
-
-# Get required credentials from environment variables
+# Load environment variables
 xdr_api_key = os.getenv('XDR_API_KEY')
 xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
 xdr_base_url = os.getenv('XDR_BASE_URL')
 
-# Get InsightVM API credentials from environment variables
 insightvm_api_username = os.getenv('INSIGHTVM_API_USERNAME')
 insightvm_api_password = os.getenv('INSIGHTVM_API_PASSWORD')
 insightvm_base_url = os.getenv('INSIGHTVM_BASE_URL')
 
-# Check for missing credentials and raise an error if any is missing
+# Check if there is any credential missing
 if not xdr_api_key or not xdr_api_key_id or not xdr_base_url:
     raise ValueError("Missing XDR API credentials. Please check .env file.")
 
 if not insightvm_api_username or not insightvm_api_password or not insightvm_base_url:
     raise ValueError("Missing InsightVM API credentials. Please check .env file.")
 
-def xdr_advanced_authentication(xdr_api_key: str, xdr_api_key_id: str,
-                                      payload: Optional[dict] = None):
-    # Use empty dictionary as payload if payload is None
-    payload = payload or {}
 
-    # Generate nonce value
+def xdr_advanced_authentication(xdr_api_key: str, xdr_api_key_id: str,
+                                 payload: Optional[dict] = None):
+    """
+    Generate Cortex XDR advanced authentication headers.
+
+    :param xdr_api_key: API Key string
+    :param xdr_api_key_id: API Key ID string
+    :param payload: If not None, attach more data to the request.
+    :return: Generated headers (dictionary)
+    """
+    payload = payload or {}
     nonce_length = 64
     nonce_chars = string.ascii_letters + string.digits
     nonce = ''.join(secrets.choice(nonce_chars) for _ in range(nonce_length))
 
-    # Generate timestamp string
     timestamp_ms = int(datetime.now(timezone.utc).timestamp()) * 1000
     timestamp_str = str(timestamp_ms)
 
-    # Generate authentication headers
     auth_string = (xdr_api_key + nonce + timestamp_str).encode('utf-8')
     auth_key = hashlib.sha256(auth_string).hexdigest()
     headers = {
@@ -57,16 +55,36 @@ def xdr_advanced_authentication(xdr_api_key: str, xdr_api_key_id: str,
         'x-xdr-timestamp': timestamp_str,
         'x-xdr-auth-id': str(xdr_api_key_id)
     }
+    headers.update(payload)
     return headers
 
-# Set up request headers
+
 xdr_headers = xdr_advanced_authentication(xdr_api_key, xdr_api_key_id)
 
 insightvm_headers = {
     "Accept": "application/json",
     "Content-Type": "application/json",
-    "Authorization": "Basic " + base64.b64encode(f"{insightvm_api_username}:{insightvm_api_password}".encode("utf-8")).decode("utf-8")
+    "Authorization": "Basic " + base64.b64encode(f"{insightvm_api_username}:{insightvm_api_password}"
+                                                  .encode("utf-8")).decode("utf-8")
 }
+
+
+# Check if base_url are reachable
+def check_base_url(base_url, headers):
+    """
+    Check if the given base_url is reachable.
+    """
+    try:
+        response = requests.head(base_url, headers=headers)
+    except requests.exceptions.RequestException as e:
+        return f"Error connecting to {base_url}: {e}"
+
+    return f"Connected to {base_url} with status code {response.status_code}"
+
+
+# Check if XDR and InsightVM base url are reachable
+print(check_base_url(xdr_base_url, xdr_headers))
+print(check_base_url(insightvm_base_url, insightvm_headers))
 
 # Get assets from Cortex XDR
 xdr_url = f"{xdr_base_url}/public_api/v1/endpoints/get_endpoints/"
@@ -77,22 +95,48 @@ if xdr_response.status_code != 200:
     exit()
 
 xdr_data = json.loads(xdr_response.text)
-xdr_assets = xdr_data["reply"]["endpoints"]
+xdr_assets = xdr_data.get("reply", [])  # Use get() method to avoid the code stop running if "reply" key is not found
 
-# Get assets from InsightVM
-insightvm_url = f"{insightvm_base_url}/api/3/assets"
-insightvm_response = requests.get(insightvm_url, headers=insightvm_headers)
+# Function to search for a hostname in InsightVM
+def search_insightvm_hostname(base_url, headers, hostname):
+    """
+    Search for a hostname in the InsightVM API.
 
-if insightvm_response.status_code != 200:
-    print("Error getting assets from InsightVM")
-    exit()
+    :param base_url: Base URL for the InsightVM API
+    :param headers: Headers for the InsightVM API request
+    :param hostname: Hostname to search for
+    :return: Matching assets (list of dictionaries)
+    """
+    url = f"{base_url}/api/3/assets/search"
+    body = {
+        "match": "all",
+        "filters": [
+            {
+                "field": "host-name",
+                "operator": "is",
+                "value": hostname
+            }
+        ]
+    }
+    response = requests.post(url, headers=headers, json=body)
 
-insightvm_data = json.loads(insightvm_response.text)
-insightvm_assets = insightvm_data["resources"]
+    if response.status_code != 200:
+        print(f"Error searching for hostname {hostname} in InsightVM")
+        return None
+
+    data = json.loads(response.text)
+    return data.get("resources", [])
+
 
 # Check if assets from Cortex XDR are also in InsightVM
-for xdr_asset in xdr_assets:
-    if xdr_asset["hostname"] in [insightvm_asset["host-name"] for insightvm_asset in insightvm_assets]:
-        print(f"{xdr_asset['hostname']} found in InsightVM")
+for asset in xdr_assets:
+    hostname = asset.get("hostname")  # Use get() method instead of indexing to avoid KeyError
+    if hostname:
+        matching_assets = search_insightvm_hostname(insightvm_base_url, insightvm_headers, hostname)
+
+        if matching_assets:
+            print(f"{hostname} found in InsightVM")
+        else:
+            print(f"{hostname} not found in InsightVM")
     else:
-        print(f"{xdr_asset['hostname']} not found in InsightVM")
+        print("Hostname not found in Cortex XDR asset")
