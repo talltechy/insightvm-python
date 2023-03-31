@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-# Python script that uses the Cortex XDR API and the InsightVM API
+# Python script that uses the Palo Alto Cortex XDR API and Rapid7 InsightVM API
 # This script is provided as-is without warranty of any kind.
 # Palo Alto Networks and Rapid7 do not support this script.
 # Use at your own risk.
