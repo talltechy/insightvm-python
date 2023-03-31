@@ -5,6 +5,7 @@ import os
 import secrets
 import string
 from datetime import datetime, timezone
+import sys
 from typing import Optional
 
 import requests
@@ -77,7 +78,8 @@ def check_base_url(base_url, headers):
     try:
         response = requests.head(base_url, headers=headers)
     except requests.exceptions.RequestException as e:
-        return f"Error connecting to {base_url}: {e}"
+        print(f"Error connecting to {base_url}: {e}")
+        sys.exit(1)
 
     return f"Connected to {base_url} with status code {response.status_code}"
 
