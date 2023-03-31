@@ -22,3 +22,8 @@ InsightVM API tools using Python
 4. The above command will overwrite the existing `requirements.txt` file with the updated list of packages and their versions.
 
 Make sure to commit and push the updated `requirements.txt` file to your version control system so that others can use the same packages as you.
+
+## API References
+
+1. [InsightVM API](https://help.rapid7.com/insightvm/en-us/api/index.html)
+2. [Palo Alto Cortex XDR API](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-API-Reference/APIs-Overview)
