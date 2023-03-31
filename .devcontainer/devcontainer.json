@@ -52,7 +52,8 @@
 			"GitHub.remotehub@prerelease",
 			"ms-vscode-remote.remote-ssh@prerelease",
 			"ms-vscode.remote-server@prerelease",
-			"vscode-icons-team.vscode-icons"
+			"vscode-icons-team.vscode-icons",
+			"42Crunch.vscode-openapi"
 		]
 	}
 	}
