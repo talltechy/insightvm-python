@@ -78,7 +78,7 @@ def check_base_url(base_url, headers, timeout=5):
     Check if the given base_url is reachable.
     """
     try:
-        response = requests.head(base_url, headers=headers, timeout=timeout)
+        response = requests.head(base_url, headers=headers, timeout=timeout, verify=False)
     except (requests.exceptions.RequestException, Timeout) as e:
         print(f"Error connecting to {base_url}: {e}")
         sys.exit(1)
@@ -101,7 +101,7 @@ xdr_data = json.loads(xdr_response.text)
 xdr_assets = xdr_data.get("reply", [])  # Use get() method to avoid the code stop running if "reply" key is not found
 
 # Function to search for a hostname in InsightVM
-def search_insightvm_hostname(base_url, headers, hostname):
+def search_insightvm_hostname(base_url, headers, hostname, verify=False):
     """
     Search for a hostname in the InsightVM API.
 
