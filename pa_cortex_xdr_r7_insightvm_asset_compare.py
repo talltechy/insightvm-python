@@ -4,7 +4,9 @@ import json
 import os
 import secrets
 import string
+import requests
 from datetime import datetime, timezone
+from requests.exceptions import Timeout
 import sys
 from typing import Optional
 
@@ -70,19 +72,18 @@ insightvm_headers = {
 }
 
 
-# Check if base_url are reachable
-def check_base_url(base_url, headers):
+# Check if base_url are reachable with timeout
+def check_base_url(base_url, headers, timeout=5):
     """
     Check if the given base_url is reachable.
     """
     try:
-        response = requests.head(base_url, headers=headers)
-    except requests.exceptions.RequestException as e:
+        response = requests.head(base_url, headers=headers, timeout=timeout)
+    except (requests.exceptions.RequestException, Timeout) as e:
         print(f"Error connecting to {base_url}: {e}")
         sys.exit(1)
 
     return f"Connected to {base_url} with status code {response.status_code}"
-
 
 # Check if XDR and InsightVM base url are reachable
 print(check_base_url(xdr_base_url, xdr_headers))
