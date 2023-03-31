@@ -12,11 +12,42 @@
 		"version": "latest"
 	  }
 	},
-	"postCreateCommand": "pip install --upgrade pip && pipenv install",
+	"postCreateCommand": "pip install --upgrade pip && pip install pipreqs && pipreqs --force . && pip install -r requirements.txt",
 	"customizations": {
 	  "extensions": [
 		"ms-python.vscode-pylance",
 		"ms-python.python"
-	  ]
+	],
+	"vscode": {
+		"extensions": [
+			"azsdktm.SecurityIntelliSense",
+			"foxundermoon.shell-format",
+			"redhat.vscode-commons",
+			"donjayamanne.python-extension-pack",
+			"redhat.vscode-xml",
+			"DotJoshJohnson.xml",
+			"redhat.vscode-yaml",
+			"ms-toolsai.jupyter",
+			"ms-toolsai.vscode-jupyter-cell-tags",
+			"ms-python.vscode-pylance",
+			"ms-python.python",
+			"esbenp.prettier-vscode",
+			"christian-kohler.path-intellisense",
+			"magicstack.MagicPython",
+			"yzhang.markdown-all-in-one",
+			"DavidAnson.vscode-markdownlint",
+			"ms-python.isort",
+			"VisualStudioExptTeam.vscodeintellicode",
+			"VisualStudioExptTeam.intellicode-api-usage-examples",
+			"oderwat.indent-rainbow",
+			"codezombiech.gitignore",
+			"GitHub.vscode-pull-request-github",
+			"GitHub.copilot",
+			"ms-azuretools.vscode-docker",
+			"batisteo.vscode-django",
+			"redhat.fabric8-analytics",
+			"DanielSanMedium.dscodegpt"
+		]
+	}
 	}
   }
