@@ -73,21 +73,21 @@ insightvm_headers = {
 
 
 # Check if base_url are reachable with timeout
-def check_base_url(base_url, headers, timeout=5):
+def check_base_url(base_url, headers, timeout=5, verify=True):
     """
     Check if the given base_url is reachable.
     """
     try:
-        response = requests.head(base_url, headers=headers, timeout=timeout, verify=False)
+        response = requests.head(base_url, headers=headers, timeout=timeout, verify=verify)
     except (requests.exceptions.RequestException, Timeout) as e:
         print(f"Error connecting to {base_url}: {e}")
         sys.exit(1)
 
     return f"Connected to {base_url} with status code {response.status_code}"
 
-# Check if XDR and InsightVM base url are reachable
-print(check_base_url(xdr_base_url, xdr_headers))
-print(check_base_url(insightvm_base_url, insightvm_headers))
+# Then, when calling the function, you can provide the `verify` parameter value
+print(check_base_url(xdr_base_url, xdr_headers, verify=True))
+print(check_base_url(insightvm_base_url, insightvm_headers, verify=False))
 
 # Get assets from Cortex XDR
 xdr_url = f"{xdr_base_url}/public_api/v1/endpoints/get_endpoints/"
@@ -143,3 +143,4 @@ for asset in xdr_assets:
             print(f"{hostname} not found in InsightVM")
     else:
         print("Hostname not found in Cortex XDR asset")
+
