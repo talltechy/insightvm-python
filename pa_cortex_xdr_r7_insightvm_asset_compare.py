@@ -1,17 +1,31 @@
 import base64
 import hashlib
 import json
+import logging
 import os
 import secrets
 import string
-import requests
-from datetime import datetime, timezone
-from requests.exceptions import Timeout
 import sys
+from datetime import datetime, timezone
 from typing import Optional
 
 import requests
 from dotenv import find_dotenv, load_dotenv
+from requests.exceptions import Timeout
+
+from logger import setup_logging, validate_log_file
+
+# Get the directory the script is in
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Set the log file path to be in the script directory
+log_file_path = os.path.join(script_dir, 'myapp.log')
+
+# Setup logging with the log file path
+setup_logging(log_file_path)
+
+# Create a logger instance
+logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
@@ -86,15 +100,15 @@ def check_base_url(base_url, headers, timeout=5, verify=True):
     return f"Connected to {base_url} with status code {response.status_code}"
 
 # Then, when calling the function, you can provide the `verify` parameter value
-print(check_base_url(xdr_base_url, xdr_headers, verify=True))
-print(check_base_url(insightvm_base_url, insightvm_headers, verify=False))
+logger.info(check_base_url(xdr_base_url, xdr_headers, verify=True))
+logger.info(check_base_url(insightvm_base_url, insightvm_headers, verify=False))
 
 # Get assets from Cortex XDR
 xdr_url = f"{xdr_base_url}/public_api/v1/endpoints/get_endpoints/"
 xdr_response = requests.post(xdr_url, headers=xdr_headers)
 
 if xdr_response.status_code != 200:
-    print("Error getting assets from Cortex XDR")
+    logger.error("Error getting assets from Cortex XDR")
     exit()
 
 xdr_data = json.loads(xdr_response.text)
@@ -124,7 +138,7 @@ def search_insightvm_hostname(base_url, headers, hostname, verify=False):
     response = requests.post(url, headers=headers, json=body)
 
     if response.status_code != 200:
-        print(f"Error searching for hostname {hostname} in InsightVM")
+        logger.error(f"Error searching for hostname {hostname} in InsightVM")
         return None
 
     data = json.loads(response.text)
@@ -133,13 +147,13 @@ def search_insightvm_hostname(base_url, headers, hostname, verify=False):
 
 # Check if assets from Cortex XDR are also in InsightVM
 for asset in xdr_assets:
-    hostname = asset.get("hostname")  # Use get() method instead of indexing to avoid KeyError
+    hostname = asset.get("hostname")
     if hostname:
         matching_assets = search_insightvm_hostname(insightvm_base_url, insightvm_headers, hostname)
 
         if matching_assets:
-            print(f"{hostname} found in InsightVM")
+            logger.info(f"{hostname} found in InsightVM")
         else:
-            print(f"{hostname} not found in InsightVM")
+            logger.info(f"{hostname} not found in InsightVM")
     else:
-        print("Hostname not found in Cortex XDR asset")
+        logger.info("Hostname not found in Cortex XDR asset")
