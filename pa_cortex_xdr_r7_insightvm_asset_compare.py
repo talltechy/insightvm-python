@@ -143,4 +143,3 @@ for asset in xdr_assets:
             print(f"{hostname} not found in InsightVM")
     else:
         print("Hostname not found in Cortex XDR asset")
-
