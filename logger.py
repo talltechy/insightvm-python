@@ -1,8 +1,9 @@
 import os
 import logging
 from logging import Formatter, FileHandler, StreamHandler, getLogger
-from logging.handlers import SysLogHandler
+from logging.handlers import SysLogHandler, NTEventLogHandler
 import platform
+
 
 # Function to validate the log file path
 def validate_log_file(log_file_path):
@@ -17,14 +18,15 @@ def validate_log_file(log_file_path):
             # Check if the log file exists and if so, ask for a desired action to take
             if os.path.exists(log_file_path):
                 mode_map = {1: 'a', 2: 'w', 3: 'n'}
-                choice = int(input(f"The logfile '{log_file_path}' already exists. Please choose an action: {[f'{i}: {c}' for i, c in mode_map.items()]} ").strip())
+                choices = [f'{i}: {c}' for i, c in mode_map.items()]
+                choice = int(input(f"The logfile '{log_file_path}' already exists. Please choose an action: {choices} ").strip())
 
-                if choice in mode_map:
+                if choice in mode_map.keys():
                     mode = mode_map[choice]
                     if mode == 'n':
                         new_path = input("Please enter a new path for the logfile: ")
                         log_file_path = new_path
-                        continue
+                        break
                     else:
                         file_handler = FileHandler(log_file_path, mode=mode)
                 else:
@@ -37,9 +39,11 @@ def validate_log_file(log_file_path):
         except Exception as e:
             retries -= 1
             print(str(e))
-            if retries > 0:\n                log_file_path = input("Please enter a valid log file path: ")
+            if retries > 0:
+                log_file_path = input("Please enter a valid log file path: ")
             else:
                 raise Exception("Could not validate the log file path.")
+
 
 # Function to setup logging with a file and optionally a syslog or Windows event log handler
 def setup_logging(log_file_path, syslog_address=None):
@@ -74,7 +78,8 @@ def setup_logging(log_file_path, syslog_address=None):
         try:
             if syslog_address is None:
                 if platform.system() == 'Linux':
-                    syslog_address = '/dev/log'\n                elif platform.system() == 'Darwin':
+                    syslog_address = '/dev/log'
+                elif platform.system() == 'Darwin':
                     syslog_address = '/var/run/syslog'
 
             syslog_handler = SysLogHandler(address=syslog_address)
@@ -85,15 +90,12 @@ def setup_logging(log_file_path, syslog_address=None):
     # If on Windows, try to create a Windows event log handler and add it to the root logger
     elif platform.system() == 'Windows':
         try:
-            # Import the required win32evtlog package
-            from win32evtlog import ReadEventLog
-
             # Try to create a Windows event log handler and add it to the root logger
-            nt_event_log_handler = WIN32EventLogHandler("Application")
+            nt_event_log_handler = NTEventLogHandler("Application")
             nt_event_log_handler.setFormatter(formatter)
             root_logger.addHandler(nt_event_log_handler)
         except ImportError:
-            print("WIN32EventLogHandler is not supported on platforms other than Windows.")
+            print("NTEventLogHandler is not supported on platforms other than Windows.")
             pass
         except Exception as e:
             print(f"Could not create Windows event log handler. {e}")
