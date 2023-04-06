@@ -8,6 +8,7 @@ import platform
 # Function to validate the log file path
 def validate_log_file(log_file_path):
     retries = 3
+    file_handler = None
     while retries > 0:
         try:
             # Check if the directory can be accessed and is writeable.
@@ -26,29 +27,31 @@ def validate_log_file(log_file_path):
                     if mode == 'n':
                         new_path = input("Please enter a new path for the logfile: ")
                         log_file_path = new_path
-                        break
                     else:
                         file_handler = FileHandler(log_file_path, mode=mode)
+                        break
                 else:
                     print("Invalid choice. Please choose an action by entering a number.")
                     continue
             else:
                 file_handler = FileHandler(log_file_path, mode='w')
-
-            return file_handler
+                break
         except Exception as e:
             retries -= 1
             print(str(e))
             if retries > 0:
                 log_file_path = input("Please enter a valid log file path: ")
-            else:
-                raise Exception("Could not validate the log file path.")
+
+    if file_handler is None:
+        raise Exception("Could not validate the log file path.")
+
+    return file_handler, log_file_path
 
 
 # Function to setup logging with a file and optionally a syslog or Windows event log handler
 def setup_logging(log_file_path, syslog_address=None):
     # Validate the log file path
-    file_handler = validate_log_file(log_file_path)
+    file_handler, log_file_path = validate_log_file(log_file_path)
 
     # Get the root logger
     root_logger = getLogger()
@@ -92,7 +95,6 @@ def setup_logging(log_file_path, syslog_address=None):
         try:
             # Try to create a Windows event log handler and add it to the root logger
             nt_event_log_handler = NTEventLogHandler("Application")
-            nt_event_log_handler.setFormatter(formatter)
             root_logger.addHandler(nt_event_log_handler)
         except ImportError:
             print("NTEventLogHandler is not supported on platforms other than Windows.")
