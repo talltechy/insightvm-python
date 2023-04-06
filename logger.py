@@ -18,17 +18,19 @@ def validate_log_file(log_file_path):
 
             # Check if the log file exists and if so, ask for a desired action to take
             if os.path.exists(log_file_path):
-                mode_map = {1: 'a', 2: 'w', 3: 'n'}
+                mode_map = {1: 'Append', 2: 'Overwrite', 3: 'New file'}
                 choices = [f'{i}: {c}' for i, c in mode_map.items()]
-                choice = int(input(f"The logfile '{log_file_path}' already exists. Please choose an action: {choices} ").strip())
+                choice = int(input(f"The logfile '{log_file_path}' already exists. Please choose an action:\n"
+                                   f"{', '.join(choices)}\n"
+                                   "Enter the number corresponding to your choice: ").strip())
 
                 if choice in mode_map.keys():
                     mode = mode_map[choice]
-                    if mode == 'n':
+                    if mode == 'New file':
                         new_path = input("Please enter a new path for the logfile: ")
                         log_file_path = new_path
                     else:
-                        file_handler = FileHandler(log_file_path, mode=mode)
+                        file_handler = FileHandler(log_file_path, mode=mode.lower())
                         break
                 else:
                     print("Invalid choice. Please choose an action by entering a number.")
