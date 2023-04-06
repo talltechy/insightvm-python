@@ -25,12 +25,13 @@ def validate_log_file(log_file_path):
                                    "Enter the number corresponding to your choice: ").strip())
 
                 if choice in mode_map.keys():
-                    mode = mode_map[choice]
-                    if mode == 'New file':
+                    action = mode_map[choice]
+                    if action == 'New file':
                         new_path = input("Please enter a new path for the logfile: ")
                         log_file_path = new_path
                     else:
-                        file_handler = FileHandler(log_file_path, mode=mode.lower())
+                        mode = 'a' if action == 'Append' else 'w'
+                        file_handler = FileHandler(log_file_path, mode=mode)
                         break
                 else:
                     print("Invalid choice. Please choose an action by entering a number.")
