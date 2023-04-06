@@ -84,10 +84,11 @@ def setup_logging(log_file_path, syslog_address=None):
                     syslog_address = '/dev/log'
                 elif platform.system() == 'Darwin':
                     syslog_address = '/var/run/syslog'
-
-            syslog_handler = SysLogHandler(address=syslog_address)
-            syslog_handler.setFormatter(formatter)
-            root_logger.addHandler(syslog_handler)
+            
+            if syslog_address is not None:
+                syslog_handler = SysLogHandler(address=syslog_address)
+                syslog_handler.setFormatter(formatter)
+                root_logger.addHandler(syslog_handler)
         except FileNotFoundError:
             print("Syslog not available on this platform.")
     # If on Windows, try to create a Windows event log handler and add it to the root logger
@@ -95,6 +96,7 @@ def setup_logging(log_file_path, syslog_address=None):
         try:
             # Try to create a Windows event log handler and add it to the root logger
             nt_event_log_handler = NTEventLogHandler("Application")
+            # Removed: nt_event_log_handler.setFormatter(formatter)
             root_logger.addHandler(nt_event_log_handler)
         except ImportError:
             print("NTEventLogHandler is not supported on platforms other than Windows.")
