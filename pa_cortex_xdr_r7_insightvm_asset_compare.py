@@ -13,7 +13,7 @@ import requests
 from dotenv import find_dotenv, load_dotenv
 from requests.exceptions import Timeout
 
-from logger import setup_logging, validate_log_file
+from logger import setup_logging
 
 # Get the directory the script is in
 script_dir = os.path.dirname(os.path.abspath(__file__))
