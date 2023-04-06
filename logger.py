@@ -52,7 +52,7 @@ def validate_log_file(log_file_path):
 
 
 # Function to setup logging with a file and optionally a syslog or Windows event log handler
-def setup_logging(log_file_path, syslog_address=None):
+def setup_logging(log_file_path, console_logging=False, syslog_logging=False, windows_event_logging=False):
     # Validate the log file path
     file_handler, log_file_path = validate_log_file(log_file_path)
 
@@ -72,34 +72,26 @@ def setup_logging(log_file_path, syslog_address=None):
     # Add the file handler to the root logger
     root_logger.addHandler(file_handler)
 
-    # Create a console handler and set the formatter
-    console_handler = StreamHandler()
-    console_handler.setFormatter(formatter)
+    if console_logging:
+        # Create a console handler and set the formatter
+        console_handler = StreamHandler()
+        console_handler.setFormatter(formatter)
 
-    # Add the console handler to the root logger
-    root_logger.addHandler(console_handler)
+        # Add the console handler to the root logger
+        root_logger.addHandler(console_handler)
 
-    # If on Linux or macOS, try to create a syslog handler and add it to the root logger
-    if platform.system() == 'Linux' or platform.system() == 'Darwin':
+    if syslog_logging and (platform.system() == 'Linux' or platform.system() == 'Darwin'):
         try:
-            if syslog_address is None:
-                if platform.system() == 'Linux':
-                    syslog_address = '/dev/log'
-                elif platform.system() == 'Darwin':
-                    syslog_address = '/var/run/syslog'
-            
-            if syslog_address is not None:
-                syslog_handler = SysLogHandler(address=syslog_address)
-                syslog_handler.setFormatter(formatter)
-                root_logger.addHandler(syslog_handler)
+            syslog_address = '/dev/log' if platform.system() == 'Linux' else '/var/run/syslog'
+            syslog_handler = SysLogHandler(address=syslog_address)
+            syslog_handler.setFormatter(formatter)
+            root_logger.addHandler(syslog_handler)
         except FileNotFoundError:
             print("Syslog not available on this platform.")
-    # If on Windows, try to create a Windows event log handler and add it to the root logger
-    elif platform.system() == 'Windows':
+
+    if windows_event_logging and platform.system() == 'Windows':
         try:
-            # Try to create a Windows event log handler and add it to the root logger
             nt_event_log_handler = NTEventLogHandler("Application")
-            # Removed: nt_event_log_handler.setFormatter(formatter)
             root_logger.addHandler(nt_event_log_handler)
         except ImportError:
             print("NTEventLogHandler is not supported on platforms other than Windows.")
@@ -107,3 +99,7 @@ def setup_logging(log_file_path, syslog_address=None):
         except Exception as e:
             print(f"Could not create Windows event log handler. {e}")
             pass
+
+
+if __name__ == "__main__":
+    setup_logging("./log_file.log", console_logging=True, syslog_logging=True, windows_event_logging=True)
