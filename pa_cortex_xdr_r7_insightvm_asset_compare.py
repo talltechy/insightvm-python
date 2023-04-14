@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+import mlogconfig
 import logging
 import os
 import secrets
@@ -13,7 +14,7 @@ import requests
 from dotenv import find_dotenv, load_dotenv
 from requests.exceptions import Timeout
 
-from logger import setup_logging
+from mlogconfig import setup_logging
 
 # Get the directory the script is in
 script_dir = os.path.dirname(os.path.abspath(__file__))
