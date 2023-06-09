@@ -451,13 +451,13 @@ traitlets = "*"
 
 [[package]]
 name = "mlogconfig"
-version = "0.2.4"
+version = "0.2.5"
 description = "This module provides a configurable logging setup for Python applications. It supports logging to console, file, syslog (for Linux and macOS), and Windows Event Log. The user can enable or disable each logging method as needed."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "mlogconfig-0.2.4-py3-none-any.whl", hash = "sha256:8309955d01104fab8d0ef3f8af3e35d971ddf19fc9e9d6ac3ee44021809c0c0f"},
-    {file = "mlogconfig-0.2.4.tar.gz", hash = "sha256:7bf5023778de9fe1aa0f5ef3e598c5c144cd9edc9ee328648a03e13d8a80c5b9"},
+    {file = "mlogconfig-0.2.5-py3-none-any.whl", hash = "sha256:db398281f298f857a8f011511ff67298b8a60d1a7f950f364a1006bf3966f3cb"},
+    {file = "mlogconfig-0.2.5.tar.gz", hash = "sha256:24f3a887684d1a5bc6643f4b42bf4db7b56d3356df1565cbe8ec26e4f9050514"},
 ]
 
 [[package]]

@@ -5,6 +5,8 @@ import string
 import hashlib
 from typing import Optional
 from dotenv import load_dotenv
+import logging
+from mlogconfig import setup_logging
 
 # Python script that uses the Palo Alto Cortex XDR API and Rapid7 InsightVM API
 # This script is provided as-is without warranty of any kind.
@@ -23,6 +25,15 @@ xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
 
 if not xdr_api_key or not xdr_api_key_id:
     raise ValueError("Missing XDR API credentials. Please check .env file.")
+
+# Set up logging via mlogconfig
+setup_logging(
+    file_path="myapp.log",
+    error_log_file_path="myapp_error.log",
+    console_logging=True,
+    syslog_logging=True,
+    log_level=logging.DEBUG,
+)
 
 def generate_advanced_authentication(api_key: str, api_key_id: str,
                                       payload: Optional[dict] = None):
@@ -59,3 +70,7 @@ def generate_advanced_authentication(api_key: str, api_key_id: str,
         'x-xdr-auth-id': str(api_key_id)
     }
     return headers
+
+# Call the `generate_advanced_authentication()` function
+auth_headers = generate_advanced_authentication(xdr_api_key, xdr_api_key_id)
+print(auth_headers)
