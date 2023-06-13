@@ -108,13 +108,13 @@ files = [
 
 [[package]]
 name = "mlogconfig"
-version = "0.2.3"
+version = "0.2.5"
 description = "This module provides a configurable logging setup for Python applications. It supports logging to console, file, syslog (for Linux and macOS), and Windows Event Log. The user can enable or disable each logging method as needed."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "mlogconfig-0.2.3-py3-none-any.whl", hash = "sha256:c2f53cc5e032dc8416f794e3f1bb0a3971131ff29edf453ab89a3287a172d71b"},
-    {file = "mlogconfig-0.2.3.tar.gz", hash = "sha256:d326c0d4e624855e46f7d53914006f9984fa26c483cef460993148f14213e997"},
+    {file = "mlogconfig-0.2.5-py3-none-any.whl", hash = "sha256:db398281f298f857a8f011511ff67298b8a60d1a7f950f364a1006bf3966f3cb"},
+    {file = "mlogconfig-0.2.5.tar.gz", hash = "sha256:24f3a887684d1a5bc6643f4b42bf4db7b56d3356df1565cbe8ec26e4f9050514"},
 ]
 
 [[package]]
@@ -172,4 +172,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "0454cad03778fb618bc1559f038050ca7a815d8eb3671033ca0b88732c1215b7"
+content-hash = "104486c7ffdbc56ae197b9fc61956130ed57e019ea53e2303c2c6777c5b94101"

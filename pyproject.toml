@@ -10,7 +10,7 @@ packages = [{include = "insightvm_python"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.31.0"
-mlogconfig = "^0.2.3"
+mlogconfig = "^0.2.5"
 python-dotenv = "^1.0.0"
 
 
