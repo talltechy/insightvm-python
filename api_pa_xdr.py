@@ -5,6 +5,9 @@ Functions:
 - get_incidents(query: Optional[str] = None) -> List[dict]: Retrieves a list of incidents from the Cortex XDR API.
 - get_endpoints(query: Optional[str] = None) -> List[dict]: Retrieves a list of endpoints from the Cortex XDR API.
 - get_alerts(query: Optional[str] = None) -> List[dict]: Retrieves a list of alerts from the Cortex XDR API.
+- get_endpoint_details(endpoint_id: str) -> dict: Retrieves details for a specific endpoint from the Cortex XDR API.
+- get_incident_details(incident_id: str) -> dict: Retrieves details for a specific incident from the Cortex XDR API.
+- get_alert_details(alert_id: str) -> dict: Retrieves details for a specific alert from the Cortex XDR API.
 """
 
 import json
@@ -132,3 +135,93 @@ def get_alerts(query: Optional[str] = None) -> List[dict]:
     except requests.exceptions.RequestException as error:
         logging.error("Error getting alerts: %s", error)
         return []
+
+def get_endpoint_details(endpoint_id: str) -> dict:
+    """
+    Retrieves details for a specific endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to retrieve details for.
+
+    Returns:
+    Dictionary containing the endpoint details.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/{endpoint_id}"
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.get(
+            endpoint_url, headers=auth_headers, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the endpoint details
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting endpoint details: %s", error)
+        return {}
+
+def get_incident_details(incident_id: str) -> dict:
+    """
+    Retrieves details for a specific incident from the Cortex XDR API.
+
+    Args:
+    incident_id: The ID of the incident to retrieve details for.
+
+    Returns:
+    Dictionary containing the incident details.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/incidents/{incident_id}"
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.get(
+            endpoint_url, headers=auth_headers, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the incident details
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting incident details: %s", error)
+        return {}
+
+def get_alert_details(alert_id: str) -> dict:
+    """
+    Retrieves details for a specific alert from the Cortex XDR API.
+
+    Args:
+    alert_id: The ID of the alert to retrieve details for.
+
+    Returns:
+    Dictionary containing the alert details.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/alerts/{alert_id}"
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.get(
+            endpoint_url, headers=auth_headers, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the alert details
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting alert details: %s", error)
+        return {}
