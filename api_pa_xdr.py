@@ -3,6 +3,7 @@ This module provides functions to interact with the Cortex XDR API.
 """
 
 import json
+import logging
 from typing import Optional
 import requests
 from dotenv import load_dotenv
@@ -22,6 +23,9 @@ auth_headers: dict[str, str] = generate_advanced_authentication(
 # Define the base URL for the Cortex XDR API
 BASE_URL = xdr_base_url
 
+# Set up logging
+logging.basicConfig(filename='api_pa_xdr.log', level=logging.ERROR)
+
 def get_incidents(query: Optional[str] = None):
     """
     Retrieves a list of incidents from the Cortex XDR API.
@@ -40,17 +44,22 @@ def get_incidents(query: Optional[str] = None):
     if query:
         params["query"] = query
 
-    # Send the API request with a timeout of 10 seconds
-    response = requests.get(
-        endpoint_url, headers=auth_headers, params=params, timeout=10
-    )
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.get(
+            endpoint_url, headers=auth_headers, params=params, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
 
-    # Parse the response JSON
-    response_json = json.loads(response.text)
+        # Parse the response JSON
+        response_json = json.loads(response.text)
 
-    # Return the list of incidents
-    return response_json["reply"]
+        # Return the list of incidents
+        return response_json["reply"]
 
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting incidents: %s", str(error))
+        return []
 
 def get_endpoints(query: Optional[str] = None):
     """
@@ -75,12 +84,14 @@ def get_endpoints(query: Optional[str] = None):
         endpoint_url, headers=auth_headers, params=params, timeout=10
     )
 
+    # Raise an exception if the request fails
+    response.raise_for_status()
+
     # Parse the response JSON
-    response_json = json.loads(response.text)
+    response_json = response.json()
 
     # Return the list of endpoints
     return response_json["reply"]
-
 
 def get_alerts(query: Optional[str] = None):
     """
@@ -100,13 +111,19 @@ def get_alerts(query: Optional[str] = None):
     if query:
         params["query"] = query
 
-    # Send the API request with a timeout of 10 seconds
-    response = requests.get(
-        endpoint_url, headers=auth_headers, params=params, timeout=10
-    )
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.get(
+            endpoint_url, headers=auth_headers, params=params, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
 
-    # Parse the response JSON
-    response_json = json.loads(response.text)
+        # Parse the response JSON
+        response_json = json.loads(response.text)
 
-    # Return the list of alerts
-    return response_json["reply"]
+        # Return the list of alerts
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting alerts: %s", error)
+        return []
