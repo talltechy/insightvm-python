@@ -1,20 +1,9 @@
 import os
 from datetime import datetime, timezone
 import secrets
-import string
 import hashlib
 from typing import Optional
 from dotenv import load_dotenv
-import logging
-from mlogconfig import setup_logging
-
-# Python script that uses the Palo Alto Cortex XDR API and Rapid7 InsightVM API
-# This script is provided as-is without warranty of any kind.
-# Palo Alto Networks and Rapid7 do not support this script.
-# Use at your own risk.
-# Written by Matt Wyen (https://github.com/talltechy)
-
-# https://cortex-panw.stoplight.io/docs/cortex-xdr/3u3j0e7hcx8t1-get-started-with-cortex-xdr-ap-is
 
 # Load environment variables from .env file
 load_dotenv('.env')
@@ -25,15 +14,6 @@ xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
 
 if not xdr_api_key or not xdr_api_key_id:
     raise ValueError("Missing XDR API credentials. Please check .env file.")
-
-# Set up logging via mlogconfig
-setup_logging(
-    file_path="myapp.log",
-    error_log_file_path="myapp_error.log",
-    console_logging=True,
-    syslog_logging=True,
-    log_level=logging.DEBUG,
-)
 
 def generate_advanced_authentication(api_key: str, api_key_id: str,
                                       payload: Optional[dict] = None):
@@ -52,13 +32,11 @@ def generate_advanced_authentication(api_key: str, api_key_id: str,
     payload = payload or {}
 
     # Generate nonce value
-    nonce_length = 64
-    nonce_chars = string.ascii_letters + string.digits
-    nonce = ''.join(secrets.choice(nonce_chars) for _ in range(nonce_length))
+    nonce = secrets.token_urlsafe(64)
 
     # Generate timestamp string
     timestamp_ms = int(datetime.now(timezone.utc).timestamp()) * 1000
-    timestamp_str = str(timestamp_ms)
+    timestamp_str = f"{timestamp_ms}"
 
     # Generate authentication headers
     auth_string = (api_key + nonce + timestamp_str).encode('utf-8')
