@@ -8,6 +8,12 @@ Functions:
 - get_endpoint_details(endpoint_id: str) -> dict: Retrieves details for a specific endpoint from the Cortex XDR API.
 - get_incident_details(incident_id: str) -> dict: Retrieves details for a specific incident from the Cortex XDR API.
 - get_alert_details(alert_id: str) -> dict: Retrieves details for a specific alert from the Cortex XDR API.
+- isolate_endpoint(endpoint_id: str) -> dict: Isolates an endpoint from the Cortex XDR API.
+- unisolate_endpoint(endpoint_id: str) -> dict: Unisolates an endpoint from the Cortex XDR API.
+- get_endpoint_quarantine_status(endpoint_id: str) -> dict: Retrieves the quarantine status for a specific endpoint from the Cortex XDR API.
+- quarantine_endpoint(endpoint_id: str) -> dict: Quarantines an endpoint from the Cortex XDR API.
+- unquarantine_endpoint(endpoint_id: str) -> dict: Unquarantines an endpoint from the Cortex XDR API.
+- get_endpoint_network_details(endpoint_id: str) -> dict: Retrieves network details for a specific endpoint from the Cortex XDR API.
 """
 
 import json
@@ -224,4 +230,226 @@ def get_alert_details(alert_id: str) -> dict:
 
     except requests.exceptions.RequestException as error:
         logging.error("Error getting alert details: %s", error)
+        return {}
+
+def isolate_endpoint(endpoint_id: str) -> dict:
+    """
+    Isolates an endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to isolate.
+
+    Returns:
+    Dictionary containing the response from the Cortex XDR API.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/isolate"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the response from the Cortex XDR API
+        return response_json
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error isolating endpoint: %s", error)
+        return {}
+
+def unisolate_endpoint(endpoint_id: str) -> dict:
+    """
+    Unisolates an endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to unisolate.
+
+    Returns:
+    Dictionary containing the response from the Cortex XDR API.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/unisolate"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the response from the Cortex XDR API
+        return response_json
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error unisolating endpoint: %s", error)
+        return {}
+
+def get_endpoint_quarantine_status(endpoint_id: str) -> dict:
+    """
+    Retrieves the quarantine status for a specific endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to retrieve the quarantine status for.
+
+    Returns:
+    Dictionary containing the quarantine status for the endpoint.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/quarantine-status"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the quarantine status for the endpoint
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting endpoint quarantine status: %s", error)
+        return {}
+
+def quarantine_endpoint(endpoint_id: str) -> dict:
+    """
+    Quarantines an endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to quarantine.
+
+    Returns:
+    Dictionary containing the response from the Cortex XDR API.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/quarantine"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the response from the Cortex XDR API
+        return response_json
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error quarantining endpoint: %s", error)
+        return {}
+
+def unquarantine_endpoint(endpoint_id: str) -> dict:
+    """
+    Unquarantines an endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to unquarantine.
+
+    Returns:
+    Dictionary containing the response from the Cortex XDR API.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/unquarantine"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the response from the Cortex XDR API
+        return response_json
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error unquarantining endpoint: %s", error)
+        return {}
+
+def get_endpoint_network_details(endpoint_id: str) -> dict:
+    """
+    Retrieves network details for a specific endpoint from the Cortex XDR API.
+
+    Args:
+    endpoint_id: The ID of the endpoint to retrieve network details for.
+
+    Returns:
+    Dictionary containing the network details for the endpoint.
+    """
+    # Define the endpoint URL
+    endpoint_url = f"{BASE_URL}/endpoints/network"
+
+    # Define the request body
+    request_body = {
+        "request_data": {
+            "endpoint_id": endpoint_id
+        }
+    }
+
+    try:
+        # Send the API request with a timeout of 10 seconds
+        response = requests.post(
+            endpoint_url, headers=auth_headers, json=request_body, timeout=10
+        )
+        response.raise_for_status()  # Raise an exception if the response status code is not 200
+
+        # Parse the response JSON
+        response_json = json.loads(response.text)
+
+        # Return the network details for the endpoint
+        return response_json["reply"]
+
+    except requests.exceptions.RequestException as error:
+        logging.error("Error getting endpoint network details: %s", error)
         return {}
