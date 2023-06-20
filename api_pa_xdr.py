@@ -1,10 +1,15 @@
 """
 This module provides functions to interact with the Cortex XDR API.
+
+Functions:
+- get_incidents(query: Optional[str] = None) -> List[dict]: Retrieves a list of incidents from the Cortex XDR API.
+- get_endpoints(query: Optional[str] = None) -> List[dict]: Retrieves a list of endpoints from the Cortex XDR API.
+- get_alerts(query: Optional[str] = None) -> List[dict]: Retrieves a list of alerts from the Cortex XDR API.
 """
 
 import json
 import logging
-from typing import Optional
+from typing import Optional, List
 import requests
 from dotenv import load_dotenv
 from api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
@@ -26,7 +31,7 @@ BASE_URL = xdr_base_url
 # Set up logging
 logging.basicConfig(filename='api_pa_xdr.log', level=logging.ERROR)
 
-def get_incidents(query: Optional[str] = None):
+def get_incidents(query: Optional[str] = None) -> List[dict]:
     """
     Retrieves a list of incidents from the Cortex XDR API.
 
@@ -61,7 +66,7 @@ def get_incidents(query: Optional[str] = None):
         logging.error("Error getting incidents: %s", str(error))
         return []
 
-def get_endpoints(query: Optional[str] = None):
+def get_endpoints(query: Optional[str] = None) -> List[dict]:
     """
     Retrieves a list of endpoints from the Cortex XDR API.
 
@@ -93,7 +98,7 @@ def get_endpoints(query: Optional[str] = None):
     # Return the list of endpoints
     return response_json["reply"]
 
-def get_alerts(query: Optional[str] = None):
+def get_alerts(query: Optional[str] = None) -> List[dict]:
     """
     Retrieves a list of alerts from the Cortex XDR API.
 
