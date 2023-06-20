@@ -8,12 +8,20 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv('.env')
 
-# Get required credentials from environment variables
-xdr_api_key = os.getenv('XDR_API_KEY')
-xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
+def load_xdr_api_credentials():
+    """
+    Loads the XDR API credentials from environment variables.
 
-if not xdr_api_key or not xdr_api_key_id:
-    raise ValueError("Missing XDR API credentials. Please check .env file.")
+    Returns:
+    Tuple containing the XDR API key and API key ID.
+    """
+    xdr_api_key = os.getenv('XDR_API_KEY')
+    xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
+
+    if not xdr_api_key or not xdr_api_key_id:
+        raise ValueError("Missing XDR API credentials. Please check .env file.")
+
+    return xdr_api_key, xdr_api_key_id
 
 def generate_advanced_authentication(api_key: str, api_key_id: str,
                                       payload: Optional[dict] = None):
@@ -49,6 +57,11 @@ def generate_advanced_authentication(api_key: str, api_key_id: str,
     }
     return headers
 
-# Call the `generate_advanced_authentication()` function
-auth_headers = generate_advanced_authentication(xdr_api_key, xdr_api_key_id)
-print(auth_headers)
+# Load the XDR API credentials
+# xdr_api_key, xdr_api_key_id = load_xdr_api_credentials()
+
+# Call the `generate_advanced_authentication()` function with the loaded credentials
+# auth_headers = generate_advanced_authentication(xdr_api_key, xdr_api_key_id)
+
+# Print the authentication headers
+# print(auth_headers)
