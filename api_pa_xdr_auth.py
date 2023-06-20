@@ -1,3 +1,8 @@
+"""
+This module provides functions for generating advanced authentication headers
+for Cortex XDR API requests.
+"""
+
 import os
 from datetime import datetime, timezone
 import secrets
@@ -6,7 +11,8 @@ from typing import Optional
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv('.env')
+load_dotenv(".env")
+
 
 def load_xdr_api_credentials():
     """
@@ -15,16 +21,19 @@ def load_xdr_api_credentials():
     Returns:
     Tuple containing the XDR API key and API key ID.
     """
-    xdr_api_key = os.getenv('XDR_API_KEY')
-    xdr_api_key_id = os.getenv('XDR_API_KEY_ID')
+    xdr_api_key = os.getenv("XDR_API_KEY")
+    xdr_api_key_id = os.getenv("XDR_API_KEY_ID")
+    xdr_base_url = os.getenv("XDR_BASE_URL")
 
     if not xdr_api_key or not xdr_api_key_id:
         raise ValueError("Missing XDR API credentials. Please check .env file.")
 
-    return xdr_api_key, xdr_api_key_id
+    return xdr_api_key, xdr_api_key_id, xdr_base_url
 
-def generate_advanced_authentication(api_key: str, api_key_id: str,
-                                      payload: Optional[dict] = None):
+
+def generate_advanced_authentication(
+    api_key: str, api_key_id: str, payload: Optional[dict] = None
+):
     """
     Generates advanced authentication headers for Cortex XDR API requests.
 
@@ -47,21 +56,22 @@ def generate_advanced_authentication(api_key: str, api_key_id: str,
     timestamp_str = f"{timestamp_ms}"
 
     # Generate authentication headers
-    auth_string = (api_key + nonce + timestamp_str).encode('utf-8')
+    auth_string = (api_key + nonce + timestamp_str).encode("utf-8")
     auth_key = hashlib.sha256(auth_string).hexdigest()
     headers = {
-        'Authorization': auth_key,
-        'x-xdr-nonce': nonce,
-        'x-xdr-timestamp': timestamp_str,
-        'x-xdr-auth-id': str(api_key_id)
+        "Authorization": auth_key,
+        "x-xdr-nonce": nonce,
+        "x-xdr-timestamp": timestamp_str,
+        "x-xdr-auth-id": str(api_key_id),
     }
     return headers
 
+
 # Load the XDR API credentials
-# xdr_api_key, xdr_api_key_id = load_xdr_api_credentials()
+# xdr_api_key, xdr_api_key_id, xdr_base_url = load_xdr_api_credentials()
 
 # Call the `generate_advanced_authentication()` function with the loaded credentials
-# auth_headers = generate_advanced_authentication(xdr_api_key, xdr_api_key_id)
+# auth_headers: dict[str, str] = generate_advanced_authentication(api_key=xdr_api_key, api_key_id=xdr_api_key_id)
 
 # Print the authentication headers
 # print(auth_headers)
