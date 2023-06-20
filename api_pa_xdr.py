@@ -33,7 +33,7 @@ def get_incidents(query: Optional[str] = None):
     List of incidents.
     """
     # Define the endpoint URL
-    endpoint_url = f"{BASE_URL}/incidents"
+    endpoint_url: str = f"{BASE_URL}/incidents"
 
     # Define the query parameters
     params = {}
