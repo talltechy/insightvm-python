@@ -3,8 +3,9 @@ import json
 import requests
 from dotenv import load_dotenv
 from api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
-from api_r7_auth import load_r7_isvm_api_credentials
+from api_r7_auth import load_r7_isvm_api_credentials, get_isvm_api_headers
 from api_pa_xdr import get_endpoints, get_endpoint_details
+from api_r7_isvm import search_isvm_endpoint
 
 # Load environment variables from .env file
 load_dotenv(".env")
@@ -19,21 +20,15 @@ xdr_api_key, xdr_api_key_id, xdr_base_url = load_xdr_api_credentials()
     isvm_base_url,
 ) = load_r7_isvm_api_credentials()
 
-# Check if there is any credential missing
+# Load the ISVM API headers
+isvm_headers = get_isvm_api_headers()
+
+# Check if there is any credentials missing
 if not xdr_api_key or not xdr_api_key_id or not xdr_base_url:
     raise ValueError("Missing XDR API credentials. Please check .env file.")
 
 if not isvm_api_username or not isvm_api_password or not isvm_base_url:
     raise ValueError("Missing InsightVM API credentials. Please check .env file.")
-
-isvm_headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "Authorization": "Basic "
-    + base64.b64encode(
-        f"{isvm_api_username}:{isvm_api_password}".encode("utf-8")
-    ).decode("utf-8"),
-}
 
 # Get assets from Cortex XDR
 
