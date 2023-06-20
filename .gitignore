@@ -734,3 +734,4 @@ working_envrionment/
 working_envrionment/*
 working_environment/share/python-wheels/
 variables.py
+insightvm-python.code-workspace
