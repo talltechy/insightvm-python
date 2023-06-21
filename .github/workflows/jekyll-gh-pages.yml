@@ -2,9 +2,9 @@
 name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the github-pages branch
   push:
-    branches: ["main"]
+    branches: ["github-pages"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -46,6 +46,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Create Branch
+        run: git checkout -b github-pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: 'Deploy to GitHub Pages'
+          title: 'Deploy to GitHub Pages'
+          branch: 'main'
+          body: 'This pull request deploys the latest changes to the GitHub Pages branch.'
