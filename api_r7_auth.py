@@ -13,6 +13,22 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+def load_r7_platform_api_credentials():
+    """
+    Loads the Rapid7 Insight Platform API credentials from environment variables.
+
+    Returns:
+    Tuple containing the Insight Platform API key and base URL.
+    Raises:
+    ValueError: If any of the required environment variables are missing.
+    """
+    r7_platform_api_key = os.getenv('INSIGHT_PLATFORM_API_KEY')
+    r7_platform_base_url = os.getenv('INSIGHT_PLATFORM_BASE_URL')
+
+    if not r7_platform_api_key or not r7_platform_base_url:
+        raise ValueError("Missing Insight Platform API credentials or BASE URL. Please check .env file.")
+
+    return r7_platform_api_key, r7_platform_base_url
 
 def load_r7_isvm_api_credentials():
     """
