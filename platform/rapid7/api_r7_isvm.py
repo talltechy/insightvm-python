@@ -4,7 +4,7 @@ This module provides functions for interacting with the InsightVM API.
 
 from typing import Optional, List, Dict, Any
 import requests
-from api_r7_auth import load_r7_isvm_api_credentials, get_isvm_api_headers
+from platform.rapid7.api_r7_auth import load_r7_isvm_api_credentials, get_isvm_api_headers
 
 # Load the InsightVM API credentials
 (

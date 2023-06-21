@@ -2,10 +2,10 @@ import base64
 import json
 import requests
 from dotenv import load_dotenv
-from api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
-from api_r7_auth import load_r7_isvm_api_credentials, get_isvm_api_headers
-from api_pa_xdr import get_endpoints, get_endpoint_details
-from api_r7_isvm import search_isvm_endpoint
+from platform.paloalto.cortex_xdr.api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
+from platform.rapid7.api_r7_auth import load_r7_isvm_api_credentials, get_isvm_api_headers
+from platform.paloalto.cortex_xdr.api_pa_xdr import get_endpoints, get_endpoint_details
+from platform.rapid7.api_r7_isvm import search_isvm_endpoint
 
 # Load environment variables from .env file
 load_dotenv(".env")
