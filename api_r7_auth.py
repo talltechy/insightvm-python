@@ -2,12 +2,12 @@
 This module provides functions for loading Rapid7 InsightVM API credentials from environment variables.
 
 Functions:
+    load_r7_platform_api_credentials: Loads the Rapid7 Insight Platform API credentials from environment variables.
     load_r7_isvm_api_credentials: Loads the Rapid7 InsightVM API credentials from environment variables.
-    get_isvm_api_headers: Returns the headers required to make API requests.
+    get_platform_api_headers: Returns the headers required to make Insight Platform API requests.
 """
 
 import os
-import base64
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -48,23 +48,19 @@ def load_r7_isvm_api_credentials():
 
     return isvm_api_username, isvm_api_password, isvm_base_url
 
-
-def get_isvm_api_headers():
+def get_platform_api_headers():
     """
-    Returns the headers required to make API requests.
+    Returns the headers required to make Insight Platform API requests.
 
     Returns:
-    Dictionary containing the headers required to make API requests.
+    Dictionary containing the headers required to make Insight Platform API requests.
     """
-    isvm_api_username, isvm_api_password, _ = load_r7_isvm_api_credentials()
+    r7_platform_api_key, _ = load_r7_platform_api_credentials()
 
-    isvm_headers = {
+    platform_headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Basic "
-        + base64.b64encode(
-            f"{isvm_api_username}:{isvm_api_password}".encode("utf-8")
-        ).decode("utf-8"),
+        "X-Api-Key": r7_platform_api_key,
     }
 
-    return isvm_headers
+    return platform_headers
