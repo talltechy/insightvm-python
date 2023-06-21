@@ -8,6 +8,8 @@ PaloAlto Cortex XDR API
 
 1. [InsightVM API](https://help.rapid7.com/insightvm/en-us/api/index.html)
 2. [Palo Alto Cortex XDR API](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-API-Reference/APIs-Overview)
+3. [Secureworks Taegis API Docs](https://api-docs.taegis.secureworks.com)
+4. [Secureworks Taegis Docs](https://docs.ctpx.secureworks.com/taegis/)
 
 ## api_pa_xdr_auth.py
 
