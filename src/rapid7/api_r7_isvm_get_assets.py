@@ -35,6 +35,34 @@ def create_database():
         logging.error(error)
         raise
 
+def insert_assets(assets):
+    """
+    Insert the assets into the SQLite database.
+    """
+    try:
+        conn = sqlite3.connect('assets.db')
+        cursor = conn.cursor()
+
+        # Loop through each asset and insert it into the database
+        for asset in assets:
+            cursor.execute(
+                "INSERT INTO assets (id, hostname, ip_address, os, last_scan_date) VALUES (?, ?, ?, ?, ?)",
+                (
+                    asset['id'],
+                    asset['host_name'],
+                    asset['ip_address'],
+                    asset['os'],
+                    asset['last_scan_date']
+                )
+            )
+
+        conn.commit()
+        conn.close()
+    except sqlite3.Error as error:
+        logging.error("Failed to insert assets into the database.")
+        logging.error(error)
+        raise
+
 def get_assets():
     """
     Retrieve the assets from the Rapid7 InsightVM API.
