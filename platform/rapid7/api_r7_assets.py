@@ -1,3 +1,6 @@
+"""
+This module provides functions for retrieving and storing assets from the InsightVM API.
+"""
 import sqlite3
 from api_r7_isvm import get_assets_isvm
 from api_r7_auth import load_r7_isvm_api_credentials
@@ -41,9 +44,9 @@ def store_assets_in_database():
             # Commit the changes and close the connection
             conn.commit()
 
-    except Exception as e:
-        # Handle any exceptions and print an error message
-        print(f"An error occurred: {str(e)}")
+    except sqlite3.Error as error:
+        # Handle the error and print an error message
+        print(f"An error occurred: {str(error)}")
 
     finally:
         # Close the connection
