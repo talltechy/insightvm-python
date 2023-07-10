@@ -9,6 +9,8 @@ Functions:
 
 import os
 from dotenv import load_dotenv
+import requests
+from requests.auth import HTTPBasicAuth
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,6 +32,23 @@ def load_r7_platform_api_credentials():
 
     return r7_platform_api_key, r7_platform_base_url
 
+def get_platform_api_headers():
+    """
+    Returns the headers required to make Insight Platform API requests.
+
+    Returns:
+    Dictionary containing the headers required to make Insight Platform API requests.
+    """
+    r7_platform_api_key, _ = load_r7_platform_api_credentials()
+
+    platform_headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Api-Key": r7_platform_api_key,
+    }
+
+    return platform_headers
+
 def load_r7_isvm_api_credentials():
     """
     Loads the Rapid7 InsightVM API credentials from environment variables.
@@ -48,19 +67,31 @@ def load_r7_isvm_api_credentials():
 
     return isvm_api_username, isvm_api_password, isvm_base_url
 
-def get_platform_api_headers():
+def isvm_get_access_token():
     """
-    Returns the headers required to make Insight Platform API requests.
+    Generates an access token for the Rapid7 InsightVM API.
 
     Returns:
-    Dictionary containing the headers required to make Insight Platform API requests.
+    The access token as a string.
     """
-    r7_platform_api_key, _ = load_r7_platform_api_credentials()
+    isvm_api_username, isvm_api_password, isvm_base_url = load_r7_isvm_api_credentials()
 
-    platform_headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "X-Api-Key": r7_platform_api_key,
-    }
+    # Construct the URL for the access token endpoint
+    token_url = f"{isvm_base_url}/api/3/access-tokens"
 
-    return platform_headers
+    # Make a POST request to the access token endpoint to generate a new access token
+    response = requests.post(
+        token_url,
+        auth=HTTPBasicAuth(isvm_api_username, isvm_api_password),
+        headers={"Accept": "application/json"},
+        timeout=10 # Add a timeout argument to avoid hanging indefinitely
+    )
+
+    # Check if the request was successful
+    if response.status_code != 201:
+        raise ValueError("Failed to generate access token.")
+
+    # Extract the access token from the response
+    access_token = response.json()["token"]
+
+    return access_token
