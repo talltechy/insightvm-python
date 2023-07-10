@@ -1,19 +1,35 @@
 """
-This module provides functions for loading Rapid7 InsightVM API credentials from environment variables.
+This module provides functions for loading Rapid7
+InsightVM and Platform API credentials from environment variables.
 
 Functions:
     load_r7_platform_api_credentials: Loads the Rapid7 Insight Platform API credentials from environment variables.
     load_r7_isvm_api_credentials: Loads the Rapid7 InsightVM API credentials from environment variables.
     get_platform_api_headers: Returns the headers required to make Insight Platform API requests.
+    get_isvm_access_token: Generates an access token for the Rapid7 InsightVM API.
+
+For authentication with the Rapid7 InsightVM API,
+you need to generate an access token using the `get_isvm_access_token` function.
+This function takes the ISVM API credentials (username and password)
+and base URL from environment variables and returns an access token as a string.
+
+Alternatively, you can pass the ISVM API credentials (username and password)
+in the request using HTTP Basic Authentication.
+However, it is recommended to use access tokens for security reasons.
 """
 
 import os
+import logging
 from dotenv import load_dotenv
 import requests
 from requests.auth import HTTPBasicAuth
 
+# Set up logging
+logging.basicConfig(filename='api_r7_auth.log', level=logging.ERROR)
+
 # Load environment variables from .env file
 load_dotenv()
+
 
 def load_r7_platform_api_credentials():
     """
@@ -28,9 +44,11 @@ def load_r7_platform_api_credentials():
     r7_platform_base_url = os.getenv('INSIGHT_PLATFORM_BASE_URL')
 
     if not r7_platform_api_key or not r7_platform_base_url:
+        logging.error("Missing Insight Platform API credentials or BASE URL. Please check .env file.")
         raise ValueError("Missing Insight Platform API credentials or BASE URL. Please check .env file.")
 
     return r7_platform_api_key, r7_platform_base_url
+
 
 def get_platform_api_headers():
     """
@@ -49,6 +67,7 @@ def get_platform_api_headers():
 
     return platform_headers
 
+
 def load_r7_isvm_api_credentials():
     """
     Loads the Rapid7 InsightVM API credentials from environment variables.
@@ -63,11 +82,13 @@ def load_r7_isvm_api_credentials():
     isvm_base_url = os.getenv('INSIGHTVM_BASE_URL')
 
     if not isvm_api_username or not isvm_api_password or not isvm_base_url:
+        logging.error("Missing ISVM API credentials or BASE URL. Please check .env file.")
         raise ValueError("Missing ISVM API credentials or BASE URL. Please check .env file.")
 
     return isvm_api_username, isvm_api_password, isvm_base_url
 
-def isvm_get_access_token():
+
+def get_isvm_access_token():
     """
     Generates an access token for the Rapid7 InsightVM API.
 
@@ -84,11 +105,12 @@ def isvm_get_access_token():
         token_url,
         auth=HTTPBasicAuth(isvm_api_username, isvm_api_password),
         headers={"Accept": "application/json"},
-        timeout=10 # Add a timeout argument to avoid hanging indefinitely
+        timeout=10  # Add a timeout argument to avoid hanging indefinitely
     )
 
     # Check if the request was successful
     if response.status_code != 201:
+        logging.error("Failed to generate access token.")
         raise ValueError("Failed to generate access token.")
 
     # Extract the access token from the response

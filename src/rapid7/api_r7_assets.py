@@ -1,20 +1,24 @@
 """
 This module provides functions for retrieving and storing assets from the InsightVM API.
 """
+import logging
 import sqlite3
-from api_r7_isvm import get_assets_isvm
-from api_r7_auth import load_r7_isvm_api_credentials
+from dotenv import load_dotenv
+from .api_r7_isvm import get_assets_isvm
+from .api_r7_auth import load_r7_isvm_api_credentials, get_isvm_access_token
+# Load environment variables from .env file
+load_dotenv(".env")
+
+# Load the R7 ISVM API credentials
+isvm_api_username, isvm_api_password, isvm_base_url = load_r7_isvm_api_credentials()
+
+# Set up logging
+logging.basicConfig(filename='api_r7_isvm.log', level=logging.ERROR)
 
 def store_assets_in_database():
     """
     Retrieve assets from the InsightVM API and store them in a local SQLite database.
     """
-    # Load the InsightVM API credentials
-    (
-        isvm_api_username,
-        isvm_api_password,
-        isvm_base_url,
-    ) = load_r7_isvm_api_credentials()
 
     # Connect to the local SQLite database
     conn = sqlite3.connect('isvm_assets.db')
