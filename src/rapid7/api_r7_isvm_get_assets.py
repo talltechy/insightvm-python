@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 
 # Define the endpoint for retrieving assets from the InsightVM API
-ASSETS_ENDPOINT = '/api/3/assets'
+API_ENDPOINT = '/api/3/assets'
 
 # Define the maximum number of assets to retrieve per page
 PAGE_SIZE = 50
@@ -30,9 +30,9 @@ def get_all_assets():
 
     # Define the headers for the API request
     headers = {
-        'Accept': 'application/json',
+        'Accept': 'application/json;charset=UTF-8',
         'Content-Type': 'application/json',
-        'Authorization': get_isvm_basic_auth_header()
+        get_isvm_basic_auth_header()
     }
 
     # Define the parameters for the API request
@@ -47,7 +47,7 @@ def get_all_assets():
     # Loop through all pages of assets
     while True:
         # Make the API request
-        response = requests.get(isvm_base_url + ASSETS_ENDPOINT, headers=headers, params=params)
+        response = requests.get(isvm_base_url + API_ENDPOINT, headers=headers, params=params, verify=False)
 
         # Check if the API request was successful
         if response.status_code != 200:
