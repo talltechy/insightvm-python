@@ -3,7 +3,7 @@ This module provides functions for retrieving a list of all agents using the Ins
 """
 
 import requests
-from platform.rapid7.api_r7_auth import load_r7_platform_api_credentials, get_platform_api_headers
+from src.rapid7.api_r7_auth import load_r7_platform_api_credentials, get_platform_api_headers
 
 def get_insight_agents(page=1, page_size=50):
     """

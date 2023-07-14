@@ -21,7 +21,7 @@ import logging
 from typing import Optional, List
 import requests
 from dotenv import load_dotenv
-from platform.paloalto.cortex_xdr.api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
+from src.paloalto.cortex_xdr.api_pa_xdr_auth import generate_advanced_authentication, load_xdr_api_credentials
 
 # Load environment variables from .env file
 load_dotenv(".env")
