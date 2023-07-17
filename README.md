@@ -6,10 +6,11 @@ PaloAlto Cortex XDR API
 
 ## API References
 
-1. [InsightVM API](https://help.rapid7.com/insightvm/en-us/api/index.html)
-2. [Palo Alto Cortex XDR API](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-API-Reference/APIs-Overview)
-3. [Secureworks Taegis API Docs](https://api-docs.taegis.secureworks.com)
-4. [Secureworks Taegis Docs](https://docs.ctpx.secureworks.com/taegis/)
+1. [Official R7: InsightVM API](https://help.rapid7.com/insightvm/en-us/api/index.html)
+2. [Official R7: InsightVM API Examples](https://github.com/rapid7/insightvm-api-examples)
+3. [Palo Alto Cortex XDR API](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-API-Reference/APIs-Overview)
+4. [Secureworks Taegis API Docs](https://api-docs.taegis.secureworks.com)
+5. [Secureworks Taegis Docs](https://docs.ctpx.secureworks.com/taegis/)
 
 ## api_pa_xdr_auth.py
 
