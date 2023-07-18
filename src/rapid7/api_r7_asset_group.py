@@ -6,7 +6,7 @@ import logging
 import urllib3
 from dotenv import load_dotenv
 import requests
-from .api_r7_auth import load_r7_isvm_api_credentials, get_isvm_basic_auth_header
+from src.rapid7.api_r7_auth import load_r7_isvm_api_credentials, get_isvm_basic_auth_header
 
 # Load environment variables from .env file
 load_dotenv()
