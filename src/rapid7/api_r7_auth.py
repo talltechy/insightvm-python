@@ -79,16 +79,15 @@ def load_r7_isvm_api_credentials():
     Raises:
         ValueError: If any of the required environment variables are missing.
     """
-    isvm_api_username = os.getenv('INSIGHTVM_API_USERNAME')
-    isvm_api_password = os.getenv('INSIGHTVM_API_PASSWORD')
-    isvm_base_url = os.getenv('INSIGHTVM_BASE_URL')
+    isvm_api_username = os.environ.get('INSIGHTVM_API_USERNAME')
+    isvm_api_password = os.environ.get('INSIGHTVM_API_PASSWORD')
+    isvm_base_url = os.environ.get('INSIGHTVM_BASE_URL')
 
     if not isvm_api_username or not isvm_api_password or not isvm_base_url:
         logging.error("Missing ISVM API credentials or BASE URL. Please check .env file.")
         raise ValueError("Missing ISVM API credentials or BASE URL. Please check .env file.")
 
     return isvm_api_username, isvm_api_password, isvm_base_url
-
 
 def get_isvm_2fa_access_token():
     """
@@ -121,8 +120,7 @@ def get_isvm_2fa_access_token():
 
     return access_token
 
-
-def get_isvm_basic_auth_header() -> dict:
+def get_isvm_basic_auth_header():
     """
     Returns the Authorization header with the Base64 encoded hash of the username and password.
 
@@ -130,7 +128,8 @@ def get_isvm_basic_auth_header() -> dict:
         A dictionary containing the Authorization header.
     """
     isvm_api_username, isvm_api_password, _ = load_r7_isvm_api_credentials()
+    auth_headers = {}
     auth_string = f"{isvm_api_username}:{isvm_api_password}"
-    encoded_auth_string = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
-    headers = {"Authorization": f"Basic {encoded_auth_string}"}
-    return headers
+    encoded_auth_string = base64.b64encode(auth_string.encode()).decode()
+    auth_headers = {"Authorization": f"Basic {encoded_auth_string}"}
+    return auth_headers
