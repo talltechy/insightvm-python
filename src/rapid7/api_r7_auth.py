@@ -69,7 +69,6 @@ def get_platform_api_headers():
 
     return platform_headers
 
-
 def load_r7_isvm_api_credentials():
     """
     Loads the Rapid7 InsightVM API credentials from environment variables.
@@ -88,37 +87,6 @@ def load_r7_isvm_api_credentials():
         raise ValueError("Missing ISVM API credentials or BASE URL. Please check .env file.")
 
     return isvm_api_username, isvm_api_password, isvm_base_url
-
-def get_isvm_2fa_access_token():
-    """
-    Generates an access token for the Rapid7 InsightVM API.
-
-    Returns:
-        The access token as a string.
-    """
-    isvm_api_username, isvm_api_password, _ = load_r7_isvm_api_credentials()
-
-    # Construct the URL for the access token endpoint
-    token_url = f"{os.getenv('INSIGHTVM_BASE_URL')}/api/3/access-tokens"
-
-    # Make a POST request to the access token endpoint to generate a new access token
-    response = requests.post(
-        token_url,
-        auth=HTTPBasicAuth(isvm_api_username, isvm_api_password),
-        headers={"Accept": "application/json"},
-        timeout=10,  # Add a timeout argument to avoid hanging indefinitely
-        verify=False  # Ignore SSL errors
-    )
-
-    # Check if the request was successful
-    if response.status_code != 201:
-        logging.error("Failed to generate access token.")
-        raise ValueError("Failed to generate access token.")
-
-    # Extract the access token from the response
-    access_token = response.json()["token"]
-
-    return access_token
 
 def get_isvm_basic_auth_header():
     """
