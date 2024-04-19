@@ -9,15 +9,10 @@ secrets = dotenv_values(".env")
 
 def load_csv(filepath):
     """
-        DataFrame: The loaded data.
-    Returns:
-
-        filepath (str): The path to the CSV file.
-    Args:
-
     Load a CSV file and return it as a DataFrame, automatically stripping whitespace from headers.
     """
-    return pd.read_csv(filepath, skipinitialspace=True)
+    df = pd.read_csv(filepath, skipinitialspace=True)
+    return df
 
 def create_sonar_query(url, name, criteria, username, password):
     """Send a POST request to create a Sonar Query.
@@ -63,6 +58,12 @@ def main():
 
     # Load data
     df = load_csv(filepath)
+
+    # Verify CSV format
+    required_columns = ['domain', 'ip_lower', 'ip_upper']
+    if not all(column in df.columns for column in required_columns):
+        print("CSV file is not formatted correctly. It should have the following columns: 'domain', 'ip_lower', 'ip_upper'.")
+        return
 
     # Clean data by stripping any leading/trailing whitespace from string data
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
