@@ -1,3 +1,5 @@
+'''Installs the Rapid7 Insight Agent.'''
+
 import os
 import glob
 import subprocess
@@ -37,6 +39,18 @@ def install_insight_agent():
     subprocess.run(["sudo", installer_file, "install_start", "--token", token], check=True)
 
     print("Installation completed successfully!")
+
+    # Check if the agent is running
+    print("Checking if the agent is running...")
+    try:
+        subprocess.run(["sudo", "service", "ir_agent", "status"], check=True)
+    except subprocess.CalledProcessError:
+        try:
+            subprocess.run(["sudo", "systemctl", "status", "ir_agent"], check=True)
+        except subprocess.CalledProcessError:
+            print("The agent is not running.")
+            return
+    print("The agent is running.")
 
 # Call the function to install the Rapid7 Insight Agent
 install_insight_agent()
