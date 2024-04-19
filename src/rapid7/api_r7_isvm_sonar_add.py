@@ -34,7 +34,7 @@ def create_sonar_query(url, name, criteria, username, password):
         "name": name,
         "criteria": criteria
     }
-    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=10)
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=1, verify=False)
     return response.status_code, response.text
 
 def main():
@@ -94,17 +94,6 @@ def main():
                 continue
 
         # Prompt for days
-        apply_to_all = input("Apply the same number of days to all subsequent entries? (y/n): ").strip().lower()
-        if apply_to_all == 'y':
-            days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
-            days = int(days) if days.isdigit() else 30
-        else:
-            days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
-            days = int(days) if days.isdigit() else 30
-            filters.append({
-            "type": "scan-date-within-the-last",
-            "days": days
-            })
         days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
         days = int(days) if days.isdigit() else 30
         filters.append({
