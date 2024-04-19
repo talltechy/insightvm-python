@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 from dotenv import dotenv_values
 from requests.auth import HTTPBasicAuth
-from status_codes import create_sonar_query_sm
+from api_r7_status_codes import create_sonar_query_sm
 
 secrets = dotenv_values(".env")
 
@@ -35,7 +35,7 @@ def create_sonar_query(url, name, criteria, username, password):
         "name": name,
         "criteria": criteria
     }
-    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=1, verify=False)
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=10, verify=False)
 
     # Get the user-friendly message based on the status code
     message = create_sonar_query_sm(response.status_code, response)
