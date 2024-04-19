@@ -1,26 +1,47 @@
+"""This script demonstrates how to create a Sonar Query in InsightVM using the API."""
+
 import pandas as pd
 import requests
 from requests.auth import HTTPBasicAuth
+from dotenv import dotenv_values
+
+secrets = dotenv_values(".env")
 
 def load_csv(filepath):
     # Load CSV and return as DataFrame, automatically stripping whitespace from headers
     return pd.read_csv(filepath, skipinitialspace=True)
 
 def create_sonar_query(url, name, criteria, username, password):
+    """Send a POST request to create a Sonar Query.
+
+    Args:
+        url (str): The API endpoint.
+        name (str): The name of the Sonar Query.
+        criteria (dict): The criteria for the Sonar Query.
+        username (str): The username for authentication.
+        password (str): The password for authentication.
+
+    Returns:
+        tuple: The status code and response text from the API.
+    """
     headers = {'Content-Type': 'application/json'}
     payload = {
         "name": name,
         "criteria": criteria
     }
-    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload)
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=10)
     return response.status_code, response.text
 
 def main():
-    filepath = 'path_to_your_file.csv'  # Update with your file path
-    url = 'https://localhost:3780/api/3/sonar_queries'  # API endpoint
-    username = 'your_username'
-    password = 'your_password'
+    filepath = 'test.csv'  # Update with your file path
+    ivm_host = secrets['ivm_host']
+    ivm_port = secrets['ivm_port']
+    username = secrets['ivm_username']
+    password = secrets['ivm_password']
     
+    # Construct the URL using the host and port
+    url = f'https://{ivm_host}:{ivm_port}/api/3/sonar_queries'  # API endpoint
+
     # Load data
     df = load_csv(filepath)
 
