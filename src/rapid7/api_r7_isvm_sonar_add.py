@@ -66,6 +66,10 @@ def main():
         print("CSV file is not formatted correctly. It should have a 'target' column.")
         return
 
+    # Add new columns for status code and response
+    df['status_code'] = ''
+    df['response'] = ''
+
     # Clean data by stripping any leading/trailing whitespace from string data
     df = df.apply(lambda x: x.map(str.strip) if x.dtype == "object" else x)
 
@@ -74,7 +78,7 @@ def main():
     days = int(days) if days.isdigit() else 30
 
     # Loop over rows in DataFrame
-    for _, row in df.iterrows():
+    for index, row in df.iterrows():
         filters = []
         target = row['target']
 
@@ -106,8 +110,15 @@ def main():
         name = "Example Sonar Query"
         name = target
         status_code, response_text = create_sonar_query(url, name, criteria, username, password)
-        print("Status Code:", status_code)
-        print("Response:", response_text)
+
+        # Update status code and response in the DataFrame
+        df.at[index, 'status_code'] = status_code
+        df.at[index, 'response'] = response_text
+
+    # Save the updated DataFrame to the CSV file
+    df.to_csv(filepath, index=False)
+
+    print("Status code and response added to the CSV file.")
 
 if __name__ == '__main__':
     main()
