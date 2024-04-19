@@ -69,6 +69,10 @@ def main():
     # Clean data by stripping any leading/trailing whitespace from string data
     df = df.apply(lambda x: x.map(str.strip) if x.dtype == "object" else x)
 
+    # Prompt for days
+    days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
+    days = int(days) if days.isdigit() else 30
+
     # Loop over rows in DataFrame
     for _, row in df.iterrows():
         filters = []
@@ -93,9 +97,6 @@ def main():
                 print(f"Invalid target: {target}")
                 continue
 
-        # Prompt for days
-        days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
-        days = int(days) if days.isdigit() else 30
         filters.append({
             "type": "scan-date-within-the-last",
             "days": days
