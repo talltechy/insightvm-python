@@ -1,9 +1,11 @@
 """This script demonstrates how to create a Sonar Query in InsightVM using the API."""
 
+import ipaddress
+import re
 import pandas as pd
 import requests
-from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
+from requests.auth import HTTPBasicAuth
 
 secrets = dotenv_values(".env")
 
@@ -59,10 +61,9 @@ def main():
     # Load data
     df = load_csv(filepath)
 
-    # Verify CSV format
-    required_columns = ['domain', 'ip_lower', 'ip_upper']
-    if not all(column in df.columns for column in required_columns):
-        print("CSV file is not formatted correctly. It should have the following columns: 'domain', 'ip_lower', 'ip_upper'.")
+    # Verify that the CSV file has the correct format
+    if 'target' not in df.columns:
+        print("CSV file is not formatted correctly. It should have a 'target' column.")
         return
 
     # Clean data by stripping any leading/trailing whitespace from string data
@@ -71,25 +72,26 @@ def main():
     # Loop over rows in DataFrame
     for _, row in df.iterrows():
         filters = []
+        target = row['target']
 
-        # Create domain filter if domain is present
-        if 'domain' in df.columns and pd.notna(row['domain']):
+        # Check if target is a domain
+        if re.match(r'^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}$', target):
             filters.append({
                 "type": "domain-contains",
-                "domain": row['domain']
+                "domain": target
             })
-
-        # Create IP range filter if IP range is present
-        if 'ip_lower' in df.columns and 'ip_upper' in df.columns and pd.notna(row['ip_lower']) and pd.notna(row['ip_upper']):
-            filters.append({
-                "type": "ip-address-range",
-                "lower": row['ip_lower'],
-                "upper": row['ip_upper']
-            })
-
-        # Skip this row if no filters were created
-        if not filters:
-            continue
+        else:
+            try:
+                # Check if target is an IP or IP range
+                ip_range = ipaddress.ip_network(target, strict=False)
+                filters.append({
+                    "type": "ip-address-range",
+                    "lower": str(ip_range.network_address),
+                    "upper": str(ip_range.broadcast_address)
+                })
+            except ValueError:
+                print(f"Invalid target: {target}")
+                continue
 
         # Prompt for days
         days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
@@ -101,7 +103,7 @@ def main():
 
         criteria = {"filters": filters}
         name = "Example Sonar Query"
-        name = row['domain'] if pd.notna(row['domain']) else row['ip_lower'] if pd.notna(row['ip_lower']) else f"{row['ip_lower']} - {row['ip_upper']}"
+        name = target
         status_code, response_text = create_sonar_query(url, name, criteria, username, password)
         print("Status Code:", status_code)
         print("Response:", response_text)
