@@ -115,6 +115,10 @@ Backup of *.doc*
 # Excel temporary
 ~$*.xls*
 
+# CSV
+~$*.csv*
+*.csv
+
 # Excel Backup File
 *.xlk
 
