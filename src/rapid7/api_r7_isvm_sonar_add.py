@@ -94,6 +94,17 @@ def main():
                 continue
 
         # Prompt for days
+        apply_to_all = input("Apply the same number of days to all subsequent entries? (y/n): ").strip().lower()
+        if apply_to_all == 'y':
+            days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
+            days = int(days) if days.isdigit() else 30
+        else:
+            days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
+            days = int(days) if days.isdigit() else 30
+            filters.append({
+            "type": "scan-date-within-the-last",
+            "days": days
+            })
         days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
         days = int(days) if days.isdigit() else 30
         filters.append({
