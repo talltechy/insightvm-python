@@ -67,7 +67,7 @@ def main():
         return
 
     # Clean data by stripping any leading/trailing whitespace from string data
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    df = df.apply(lambda x: x.map(str.strip) if x.dtype == "object" else x)
 
     # Loop over rows in DataFrame
     for _, row in df.iterrows():
