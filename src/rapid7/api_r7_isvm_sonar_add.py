@@ -107,7 +107,6 @@ def main():
         })
 
         criteria = {"filters": filters}
-        name = "Example Sonar Query"
         name = target
         status_code, response_text = create_sonar_query(url, name, criteria, username, password)
 
