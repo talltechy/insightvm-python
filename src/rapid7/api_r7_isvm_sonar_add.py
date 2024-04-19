@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 from dotenv import dotenv_values
 from requests.auth import HTTPBasicAuth
+from status_codes import create_sonar_query_sm
 
 secrets = dotenv_values(".env")
 
@@ -35,20 +36,11 @@ def create_sonar_query(url, name, criteria, username, password):
         "criteria": criteria
     }
     response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload, timeout=1, verify=False)
-    
-    # Check the status code and provide a more user-friendly message
-    if response.status_code == 200:
-        return response.status_code, f"Sonar Query created successfully. ID: {response.json()['id']}"
-    elif response.status_code == 400:
-        return response.status_code, f"Bad Request: {response.json()['message']}"
-    elif response.status_code == 401:
-        return response.status_code, f"Unauthorized: {response.json()['message']}"
-    elif response.status_code == 500:
-        return response.status_code, f"Internal Server Error: {response.json()['message']}"
-    elif response.status_code == 503:
-        return response.status_code, f"Service Unavailable: {response.json()['message']}"
-    else:
-        return response.status_code, response.text
+
+    # Get the user-friendly message based on the status code
+    message = create_sonar_query_sm(response.status_code, response)
+
+    return response.status_code, message
 
 def main():
     """
