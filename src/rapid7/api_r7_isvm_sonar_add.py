@@ -8,7 +8,15 @@ from dotenv import dotenv_values
 secrets = dotenv_values(".env")
 
 def load_csv(filepath):
-    # Load CSV and return as DataFrame, automatically stripping whitespace from headers
+    """
+        DataFrame: The loaded data.
+    Returns:
+
+        filepath (str): The path to the CSV file.
+    Args:
+
+    Load a CSV file and return it as a DataFrame, automatically stripping whitespace from headers.
+    """
     return pd.read_csv(filepath, skipinitialspace=True)
 
 def create_sonar_query(url, name, criteria, username, password):
@@ -33,12 +41,23 @@ def create_sonar_query(url, name, criteria, username, password):
     return response.status_code, response.text
 
 def main():
+    """
+    Main function to create Sonar queries based on data from a CSV file.
+
+    This function reads data from a CSV file, cleans the data, and creates Sonar queries based on the data.
+    The queries are then sent to the specified InsightVM host using the provided credentials.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     filepath = 'test.csv'  # Update with your file path
     ivm_host = secrets['ivm_host']
     ivm_port = secrets['ivm_port']
     username = secrets['ivm_username']
     password = secrets['ivm_password']
-    
     # Construct the URL using the host and port
     url = f'https://{ivm_host}:{ivm_port}/api/3/sonar_queries'  # API endpoint
 
@@ -81,9 +100,8 @@ def main():
 
         criteria = {"filters": filters}
         name = "Example Sonar Query"
-        
+        name = row['domain'] if pd.notna(row['domain']) else row['ip_lower'] if pd.notna(row['ip_lower']) else f"{row['ip_lower']} - {row['ip_upper']}"
         status_code, response_text = create_sonar_query(url, name, criteria, username, password)
-        
         print("Status Code:", status_code)
         print("Response:", response_text)
 
