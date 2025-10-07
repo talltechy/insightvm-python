@@ -51,6 +51,8 @@ class ScansAPI(BaseAPI):
     SSL verification, and error handling automatically.
     """
     
+    MAX_PAGE_SIZE = 500
+    
     def list(
         self,
         active: Optional[bool] = None,
@@ -92,7 +94,7 @@ class ScansAPI(BaseAPI):
             ```
         """
         # Validate size parameter
-        size = min(size, 500)
+        size = min(size, self.MAX_PAGE_SIZE)
         
         params: Dict[str, Any] = {
             'page': page,
@@ -189,7 +191,7 @@ class ScansAPI(BaseAPI):
             ```
         """
         # Validate size parameter
-        size = min(size, 500)
+        size = min(size, self.MAX_PAGE_SIZE)
         
         params: Dict[str, Any] = {
             'page': page,
@@ -401,10 +403,12 @@ class ScansAPI(BaseAPI):
         """
         all_scans = []
         page = 0
-        size = 500
+        size = self.MAX_PAGE_SIZE
         
         while True:
-            response = self.list(active=active, page=page, size=size, sort=sort)
+            response = self.list(
+                active=active, page=page, size=size, sort=sort
+            )
             scans = response.get('resources', [])
             all_scans.extend(scans)
             
@@ -464,15 +468,15 @@ class ScansAPI(BaseAPI):
             ```
         """
         start_time = time.time()
+        terminal_states = [
+            'finished', 'stopped', 'error', 'aborted'
+        ]
         
         while True:
             scan = self.get_scan(scan_id)
             status = scan.get('status', '').lower()
             
             # Check if scan is in a terminal state
-            terminal_states = [
-                'finished', 'stopped', 'error', 'aborted'
-            ]
             if status in terminal_states:
                 return scan
             
