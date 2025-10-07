@@ -11,6 +11,7 @@ from .auth import InsightVMAuth
 from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
 from .api.sonar_queries import SonarQueryAPI
+from .api.sites import SiteAPI
 
 
 class InsightVMClient:
@@ -25,6 +26,7 @@ class InsightVMClient:
         assets (AssetAPI): Asset operations client
         asset_groups (AssetGroupAPI): Asset group operations client
         sonar_queries (SonarQueryAPI): Sonar query operations client
+        sites (SiteAPI): Site operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -102,6 +104,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.sonar_queries = SonarQueryAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.sites = SiteAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     
