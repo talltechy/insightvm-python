@@ -362,13 +362,12 @@ class ScanTemplateAPI(BaseAPI):
         source.pop('id', None)
         source.pop('links', None)
         
-        # Set new name and description
-        source['name'] = new_name
-        if new_description:
-            source['description'] = new_description
+        # Remove name and description from kwargs and pass as positional arguments
+        source.pop('name', None)  # Remove original name
+        source.pop('description', None)  # Remove original description
         
-        # Create the new template
-        return self.create(**source)
+        # Create the new template with new name/description as positional args
+        return self.create(new_name, new_description, **source)
     
     def configure_performance(self, template_id: str, 
                             max_parallel_assets: Optional[int] = None,
