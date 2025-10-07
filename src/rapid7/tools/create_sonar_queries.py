@@ -12,6 +12,10 @@ CSV Format:
     test.org
 
 Usage:
+    # Interactive mode
+    python create_sonar_queries.py
+
+    # CLI mode
     python create_sonar_queries.py <csv_file> [--days N]
 
 Example:
@@ -23,7 +27,7 @@ import ipaddress
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 import pandas as pd  # type: ignore
 
@@ -31,6 +35,8 @@ import pandas as pd  # type: ignore
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.rapid7.client import InsightVMClient  # noqa: E402
+from src.rapid7.config import get_config  # noqa: E402
+from src.rapid7.ui import create_ui  # noqa: E402
 
 
 def is_valid_domain(domain: str) -> bool:
@@ -113,7 +119,8 @@ def load_targets_from_csv(filepath: str) -> pd.DataFrame:
 def create_queries_from_csv(
     client: InsightVMClient,
     filepath: str,
-    days: int = 30
+    days: int = 30,
+    ui: Optional[Any] = None
 ) -> pd.DataFrame:
     """
     Create Sonar queries from CSV file.
@@ -134,13 +141,22 @@ def create_queries_from_csv(
     df['query_id'] = ''
     df['message'] = ''
     
-    print(f"\nProcessing {len(df)} targets with {days}-day scan filter...")
-    print("-" * 80)
+    if ui:
+        ui.print_info(
+            f"Processing {len(df)} targets with {days}-day scan filter"
+        )
+        ui.print_separator()
+    else:
+        print(f"\nProcessing {len(df)} targets with {days}-day scan filter...")
+        print("-" * 80)
     
     # Process each target
     for index, row in df.iterrows():
         target = row['target']
-        print(f"\nProcessing: {target}")
+        if ui:
+            print(f"\nProcessing: {target}")
+        else:
+            print(f"\nProcessing: {target}")
         
         try:
             # Parse target
@@ -165,23 +181,149 @@ def create_queries_from_csv(
                 f"Query created successfully. ID: {result.get('id')}"
             )
             
-            print(f"  ✓ Success - Query ID: {result.get('id')}")
+            if ui:
+                ui.print_success(f"Query ID: {result.get('id')}")
+            else:
+                print(f"  ✓ Success - Query ID: {result.get('id')}")
             
         except ValueError as e:
             df.at[index, 'status'] = 'error'
             df.at[index, 'message'] = str(e)
-            print(f"  ✗ Error: {e}")
+            if ui:
+                ui.print_error(str(e))
+            else:
+                print(f"  ✗ Error: {e}")
             
         except Exception as e:
             df.at[index, 'status'] = 'error'
             df.at[index, 'message'] = f"API Error: {str(e)}"
-            print(f"  ✗ API Error: {e}")
+            if ui:
+                ui.print_error(f"API Error: {str(e)}")
+            else:
+                print(f"  ✗ API Error: {e}")
     
     return df
 
 
+def interactive_mode():
+    """Run in interactive mode."""
+    config = get_config()
+    ui = create_ui()
+    
+    ui.print_header("InsightVM Sonar Query Creator - Interactive Mode")
+    
+    # Get or confirm CSV file path
+    tool_config = config.get_tool_config('sonar_queries')
+    last_csv = tool_config.get('last_csv_path', '')
+    
+    if last_csv and Path(last_csv).exists():
+        use_last = ui.confirm(
+            f"Use last CSV file ({last_csv})?",
+            default=True
+        )
+        if use_last:
+            csv_file = last_csv
+        else:
+            csv_file = ui.prompt("Enter CSV file path")
+    else:
+        csv_file = ui.prompt("Enter CSV file path")
+    
+    # Validate CSV file
+    if not Path(csv_file).exists():
+        ui.print_error(f"CSV file not found: {csv_file}")
+        return 1
+    
+    # Get days parameter
+    default_days = tool_config.get('default_days', 30)
+    days_input = ui.prompt(
+        "Number of days for scan filter",
+        default=str(default_days)
+    )
+    
+    try:
+        days = int(days_input)
+        if days < 1:
+            ui.print_error("Days must be a positive integer")
+            return 1
+    except ValueError:
+        ui.print_error("Please enter a valid number")
+        return 1
+    
+    # Get output file
+    last_output = tool_config.get('last_output_path', '')
+    default_output = str(
+        Path(csv_file).parent /
+        f"{Path(csv_file).stem}_results{Path(csv_file).suffix}"
+    )
+    
+    if last_output:
+        output_file = ui.prompt(
+            "Output CSV file path",
+            default=default_output
+        )
+    else:
+        output_file = ui.prompt(
+            "Output CSV file path",
+            default=default_output
+        )
+    
+    # Preview and confirm
+    ui.print_separator()
+    ui.print_info(f"Input file:  {csv_file}")
+    ui.print_info(f"Output file: {output_file}")
+    ui.print_info(f"Days filter: {days}")
+    ui.print_separator()
+    
+    if not ui.confirm("Proceed with these settings?", default=True):
+        ui.print_warning("Operation cancelled")
+        return 0
+    
+    # Save configuration
+    config.set('tools.sonar_queries.last_csv_path', csv_file)
+    config.set('tools.sonar_queries.default_days', days)
+    config.set('tools.sonar_queries.last_output_path', output_file)
+    config.save()
+    
+    # Process CSV
+    try:
+        ui.print_info("Connecting to InsightVM...")
+        client = InsightVMClient()
+        ui.print_success(f"Connected to: {client.auth.base_url}")
+        
+        results_df = create_queries_from_csv(
+            client,
+            csv_file,
+            days=days,
+            ui=ui
+        )
+        
+        # Save results
+        results_df.to_csv(output_file, index=False)
+        
+        # Print summary
+        ui.print_separator()
+        ui.print_header("Summary")
+        success_count = (results_df['status'] == 'success').sum()
+        error_count = (results_df['status'] == 'error').sum()
+        ui.print_info(f"Total targets:  {len(results_df)}")
+        ui.print_success(f"Successful:     {success_count}")
+        if error_count > 0:
+            ui.print_error(f"Failed:         {error_count}")
+        ui.print_info(f"Results saved to: {output_file}")
+        
+        return 0 if error_count == 0 else 1
+        
+    except Exception as e:
+        ui.print_error(f"Unexpected error: {e}")
+        return 1
+
+
 def main():
     """Main function."""
+    # Check if running in interactive mode (no arguments)
+    if len(sys.argv) == 1:
+        sys.exit(interactive_mode())
+    
     parser = argparse.ArgumentParser(
         description='Create InsightVM Sonar queries from CSV file',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -210,20 +352,32 @@ Examples:
     
     parser.add_argument(
         'csv_file',
+        nargs='?',
         help='Path to CSV file containing targets'
     )
     parser.add_argument(
         '--days',
         type=int,
         default=30,
-        help='Number of days for scan-date-within-the-last filter (default: 30)'
+        help='Number of days for scan-date-within-the-last filter '
+             '(default: 30)'
     )
     parser.add_argument(
         '--output',
         help='Output CSV file path (default: input file with _results suffix)'
     )
+    parser.add_argument(
+        '--interactive',
+        '-i',
+        action='store_true',
+        help='Run in interactive mode'
+    )
     
     args = parser.parse_args()
+    
+    # Run interactive mode if requested
+    if args.interactive or not args.csv_file:
+        sys.exit(interactive_mode())
     
     # Validate days parameter
     if args.days < 1:
