@@ -26,8 +26,8 @@ reports = client.reports.list()
 instance_id = client.reports.generate(report_id=42)
 
 # Wait for completion and download
-instance = client.reports.wait_for_completion(42, str(instance_id))
-content = client.reports.download(42, str(instance_id))
+instance = client.reports.wait_for_completion(42, instance_id)
+content = client.reports.download(42, instance_id)
 
 # Save to file
 with open("report.pdf.gz", "wb") as f:
@@ -155,7 +155,7 @@ instance_id = client.reports.generate(42)
 print(f"Report generation started: Instance {instance_id}")
 
 # Check status
-instance = client.reports.get_instance(42, str(instance_id))
+instance = client.reports.get_instance(42, instance_id)
 print(f"Status: {instance['status']}")
 ```
 
@@ -170,7 +170,7 @@ instance_id = client.reports.generate(42)
 # Wait for completion (polls every 30 seconds by default)
 final_instance = client.reports.wait_for_completion(
     report_id=42,
-    instance_id=str(instance_id),
+    instance_id=instance_id,
     poll_interval=60,  # Check every minute
     timeout=3600       # Give up after 1 hour
 )
@@ -260,7 +260,7 @@ if latest:
     print(f"Status: {latest['status']}")
     
     if latest['status'] == 'complete':
-        content = client.reports.download(42, str(latest['id']))
+        content = client.reports.download(42, latest['id'])
 else:
     print("No report instances found")
 ```
@@ -483,11 +483,11 @@ instance_id = client.reports.generate(report_id)
 # Wait and download
 instance = client.reports.wait_for_completion(
     report_id,
-    str(instance_id),
+    instance_id,
     timeout=3600
 )
 
-content = client.reports.download(report_id, str(instance_id))
+content = client.reports.download(report_id, instance_id)
 
 with open("pci_compliance.pdf.gz", "wb") as f:
     f.write(content)
@@ -608,12 +608,12 @@ try:
     # Wait for completion
     instance = client.reports.wait_for_completion(
         result['id'],
-        str(instance_id),
+        instance_id,
         timeout=3600
     )
     
     # Download
-    content = client.reports.download(result['id'], str(instance_id))
+    content = client.reports.download(result['id'], instance_id)
     
 except requests.exceptions.HTTPError as e:
     if e.response.status_code == 404:
