@@ -76,7 +76,7 @@ def main():
     df['response'] = ''
 
     # Clean data by stripping any leading/trailing whitespace from string data
-    df = df.apply(lambda x: x.map(str.strip) if x.dtype == "object" else x)
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
     # Prompt for days
     days = input("Enter the number of days for 'scan-date-within-the-last' (default 30): ").strip()
