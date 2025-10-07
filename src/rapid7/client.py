@@ -12,6 +12,7 @@ from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
 from .api.reports import ReportsAPI
 from .api.scans import ScansAPI
+from .api.scan_engines import ScanEngineAPI
 from .api.sites import SiteAPI
 from .api.sonar_queries import SonarQueryAPI
 
@@ -30,6 +31,7 @@ class InsightVMClient:
         sonar_queries (SonarQueryAPI): Sonar query operations client
         sites (SiteAPI): Site operations client
         scans (ScansAPI): Scan operations client
+        scan_engines (ScanEngineAPI): Scan engine operations client
         reports (ReportsAPI): Report operations client
     
     Example:
@@ -119,6 +121,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.scans = ScansAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.scan_engines = ScanEngineAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.reports = ReportsAPI(
