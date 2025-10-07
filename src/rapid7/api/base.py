@@ -87,10 +87,14 @@ class BaseAPI:
         params: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
+        return_raw: bool = False,
         **kwargs
-    ) -> requests.Response:
+    ) -> Any:
         """
-        Make an API request.
+        Make an API request with automatic JSON parsing.
+        
+        By default, this method returns parsed JSON dictionaries. For endpoints
+        that return binary content (like file downloads), use return_raw=True.
         
         Args:
             method: HTTP method (GET, POST, PUT, DELETE)
@@ -98,13 +102,25 @@ class BaseAPI:
             params: Query parameters
             json: JSON body data
             headers: Additional headers
+            return_raw: If True, return raw Response object instead of parsed JSON
+                       (useful for binary content like downloads). Default: False
             **kwargs: Additional arguments for requests
         
         Returns:
-            Response object from requests
+            Parsed JSON dictionary if return_raw=False (default),
+            or raw Response object if return_raw=True
         
         Raises:
             requests.HTTPError: If the request fails
+        
+        Example:
+            >>> # Standard JSON response
+            >>> data = self._request('GET', 'assets')
+            >>> print(data['resources'])
+            >>> 
+            >>> # Binary content (e.g., file download)
+            >>> response = self._request('GET', 'reports/1/download', return_raw=True)
+            >>> content = response.content
         """
         url = self._build_url(endpoint)
         
@@ -123,7 +139,14 @@ class BaseAPI:
         try:
             response = requests.request(method, url, **kwargs)
             response.raise_for_status()
-            return response
+            
+            # Return raw response for binary content, parsed JSON otherwise
+            if return_raw:
+                return response
+            
+            # Parse JSON response
+            return response.json()
+            
         except requests.exceptions.RequestException as e:
             logging.error(f"{method} {url} failed: {str(e)}")
             raise
@@ -135,7 +158,10 @@ class BaseAPI:
         **kwargs
     ) -> requests.Response:
         """
-        Make a GET request.
+        Make a GET request (returns raw Response for backward compatibility).
+        
+        Note: For new code, prefer using _request() directly which returns
+        parsed JSON by default.
         
         Args:
             endpoint: API endpoint
@@ -143,9 +169,11 @@ class BaseAPI:
             **kwargs: Additional arguments
         
         Returns:
-            Response object
+            Response object (for backward compatibility with existing code)
         """
-        return self._request('GET', endpoint, params=params, **kwargs)
+        return self._request(
+            'GET', endpoint, params=params, return_raw=True, **kwargs
+        )
     
     def post(
         self,
@@ -154,7 +182,10 @@ class BaseAPI:
         **kwargs
     ) -> requests.Response:
         """
-        Make a POST request.
+        Make a POST request (returns raw Response for backward compatibility).
+        
+        Note: For new code, prefer using _request() directly which returns
+        parsed JSON by default.
         
         Args:
             endpoint: API endpoint
@@ -162,9 +193,11 @@ class BaseAPI:
             **kwargs: Additional arguments
         
         Returns:
-            Response object
+            Response object (for backward compatibility with existing code)
         """
-        return self._request('POST', endpoint, json=json, **kwargs)
+        return self._request(
+            'POST', endpoint, json=json, return_raw=True, **kwargs
+        )
     
     def put(
         self,
@@ -173,7 +206,10 @@ class BaseAPI:
         **kwargs
     ) -> requests.Response:
         """
-        Make a PUT request.
+        Make a PUT request (returns raw Response for backward compatibility).
+        
+        Note: For new code, prefer using _request() directly which returns
+        parsed JSON by default.
         
         Args:
             endpoint: API endpoint
@@ -181,9 +217,11 @@ class BaseAPI:
             **kwargs: Additional arguments
         
         Returns:
-            Response object
+            Response object (for backward compatibility with existing code)
         """
-        return self._request('PUT', endpoint, json=json, **kwargs)
+        return self._request(
+            'PUT', endpoint, json=json, return_raw=True, **kwargs
+        )
     
     def delete(
         self,
@@ -191,13 +229,18 @@ class BaseAPI:
         **kwargs
     ) -> requests.Response:
         """
-        Make a DELETE request.
+        Make a DELETE request (returns raw Response for backward compatibility).
+        
+        Note: For new code, prefer using _request() directly which returns
+        parsed JSON by default.
         
         Args:
             endpoint: API endpoint
             **kwargs: Additional arguments
         
         Returns:
-            Response object
+            Response object (for backward compatibility with existing code)
         """
-        return self._request('DELETE', endpoint, **kwargs)
+        return self._request(
+            'DELETE', endpoint, return_raw=True, **kwargs
+        )
