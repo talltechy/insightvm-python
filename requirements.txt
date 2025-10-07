@@ -1,0 +1,19 @@
+# InsightVM-Python v2.0 Dependencies
+
+# HTTP and API Communication
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Configuration and Environment
+python-dotenv>=1.0.0
+
+# Database Support (Optional)
+# Uncomment if using PostgreSQL database features
+# psycopg2-binary>=2.9.0
+
+# Development Dependencies (Optional)
+# Uncomment for development work
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.0.0
+# flake8>=6.0.0
