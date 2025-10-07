@@ -7,6 +7,14 @@ urllib3>=2.0.0
 # Configuration and Environment
 python-dotenv>=1.0.0
 
+# Data Processing
+pandas>=2.0.0
+
+# UI Enhancement (Optional, but highly recommended)
+# Provides colored output, progress bars, and interactive menus
+# Falls back to simple terminal output if not available
+rich>=13.0.0
+
 # Database Support (Optional)
 # Uncomment if using PostgreSQL database features
 # psycopg2-binary>=2.9.0
