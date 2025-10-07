@@ -401,8 +401,8 @@ class ScanEngineAPI(BaseAPI):
         """
         response = self.list()
         engines = response.get('resources', [])
-        # Filter by status if status field is present
-        return [e for e in engines if e.get('status', '').lower() in ['active', 'running', '']]
+        # Only include engines with explicit 'active' or 'running' status
+        return [e for e in engines if e.get('status', '').lower() in ['active', 'running']]
     
     def get_engine_summary(self, engine_id: int) -> Dict[str, Any]:
         """
