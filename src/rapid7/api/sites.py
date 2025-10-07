@@ -314,31 +314,23 @@ class SiteAPI(BaseAPI):
         all_sites = self.get_all()
         filtered = []
         
+        # Helper function for case conversion
+        def _case(val):
+            return val if case_sensitive or val is None else val.lower()
+        
         for site in all_sites:
             name = site.get('name', '')
+            name_cmp = _case(name)
+            starts_cmp = _case(starts_with)
+            ends_cmp = _case(ends_with)
+            contains_cmp = _case(contains)
             
-            if not case_sensitive:
-                name_lower = name.lower()
-                starts_lower = starts_with.lower() if starts_with else None
-                ends_lower = ends_with.lower() if ends_with else None
-                contains_lower = contains.lower() if contains else None
-            else:
-                name_lower = name
-                starts_lower = starts_with
-                ends_lower = ends_with
-                contains_lower = contains
-            
-            # Check all conditions
-            matches = True
-            
-            if starts_with and not name_lower.startswith(starts_lower):
-                matches = False
-            if ends_with and not name_lower.endswith(ends_lower):
-                matches = False
-            if contains and contains_lower not in name_lower:
-                matches = False
-            
-            if matches:
+            # Check all conditions in a single boolean expression
+            if (
+                (not starts_with or name_cmp.startswith(starts_cmp))
+                and (not ends_with or name_cmp.endswith(ends_cmp))
+                and (not contains or contains_cmp in name_cmp)
+            ):
                 filtered.append(site)
         
         return filtered
@@ -424,19 +416,25 @@ class SiteAPI(BaseAPI):
         else:
             filtered_sites = self.get_all()
         
-        # Apply name pattern filter
+        # Apply name pattern filter using filter_by_name_pattern
+        # for consistency
         if name_pattern:
+            name_pattern_sites = self.filter_by_name_pattern(
+                contains=name_pattern
+            )
+            name_pattern_site_ids = {s['id'] for s in name_pattern_sites}
             filtered_sites = [
-                s for s in filtered_sites 
-                if name_pattern.lower() in s.get('name', '').lower()
+                s for s in filtered_sites
+                if s['id'] in name_pattern_site_ids
             ]
         
         # Apply empty sites filter
         if empty_only:
-            empty_site_ids = {s['id'] for s in self.filter_empty_sites()}
+            empty_site_ids = {
+                s['id'] for s in self.filter_empty_sites()
+            }
             filtered_sites = [
-                s for s in filtered_sites 
-                if s['id'] in empty_site_ids
+                s for s in filtered_sites if s['id'] in empty_site_ids
             ]
         
         return filtered_sites
@@ -501,7 +499,9 @@ class SiteAPI(BaseAPI):
                         self.delete_site(site_id)
                         result['successes'].append(site_info)
                         result['success_count'] += 1
-                        logger.info(f"Deleted site {site_id}: {site.get('name')}")
+                        logger.info(
+                            f"Deleted site {site_id}: {site.get('name')}"
+                        )
                     except Exception as delete_error:
                         error_info = {
                             **site_info,
@@ -509,7 +509,10 @@ class SiteAPI(BaseAPI):
                         }
                         result['failures'].append(error_info)
                         result['failure_count'] += 1
-                        logger.error(f"Failed to delete site {site_id}: {str(delete_error)}")
+                        logger.error(
+                            f"Failed to delete site {site_id}: "
+                            f"{str(delete_error)}"
+                        )
                         
                         if not continue_on_error:
                             break
