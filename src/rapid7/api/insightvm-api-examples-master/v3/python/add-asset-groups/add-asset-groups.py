@@ -49,6 +49,7 @@ def create_ag():
         headers=headers,
         data=payload,
         verify=False,
+        timeout=30,
     ).json()
     agid = response["id"]
     print(

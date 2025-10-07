@@ -38,6 +38,7 @@ def runscan():
         headers=headers,
         data=payload,
         verify=False,
+        timeout=30,
     ).json()
     SCANID = response["id"]
     return SCANID
@@ -59,6 +60,7 @@ def checkrunning():
         headers=headers,
         data=payload,
         verify=False,
+        timeout=30,
     ).json()
     return response["status"]
 

@@ -27,7 +27,7 @@ if not IVM_CONNECTION:
 
 def get_alert_ids(siteID):
     alerts = requests.get(
-        f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''))
+        f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''), timeout=30)
     alerts.raise_for_status()
     alertIDs = []
     for alert in alerts.json()["resources"]:
@@ -67,10 +67,10 @@ def add_smtp_alert(siteID, name, recipients, alertID=None, enabled=True, enabled
     if alertID:
         params["id"] = alertID
         smtp_alert = requests.put(
-            f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''), json=params)
+            f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''), json=params, timeout=30)
     else:
         smtp_alert = requests.post(
-            f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''), json=params)
+            f"{IVM_CONNECTION}sites/{siteID}/alerts/smtp", verify=True, auth=(IVM_AUTH, ''), json=params, timeout=30)
 
     smtp_alert.raise_for_status()
 

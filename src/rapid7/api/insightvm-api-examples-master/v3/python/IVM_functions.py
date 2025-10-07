@@ -14,7 +14,7 @@ class IVM_functions:
 		  'Accept': 'application/json;charset=UTF-8',
 		  'Authorization': 'Basic '+creds
 		}
-		response = requests.request("GET", url, headers=headers, data=payload, verify=False)
+		response = requests.request("GET", url, headers=headers, data=payload, verify=False, timeout=30)
 		json_text = response.text
 		parsed = json.loads(json_text)
 		return parsed
@@ -28,7 +28,7 @@ class IVM_functions:
 		  'Accept': 'application/json;charset=UTF-8',
 		  'Authorization': 'Basic '+creds
 		}
-		response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+		response = requests.request("POST", url, headers=headers, data=payload, verify=False, timeout=30)
 		json_text = response.text
 		parsed = json.loads(json_text)
 		if response.status_code == 201:
@@ -49,7 +49,7 @@ class IVM_functions:
 		  'Accept': 'application/json;charset=UTF-8',
 		  'Authorization': 'Basic '+creds
 		}
-		response = requests.request("PUT", url, headers=headers, data=payload, verify=False)
+		response = requests.request("PUT", url, headers=headers, data=payload, verify=False, timeout=30)
 		json_text = response.text
 		parsed = json.loads(json_text)
 		return parsed
