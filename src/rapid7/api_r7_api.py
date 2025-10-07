@@ -3,6 +3,7 @@ TODO: Add docstring
 """
 
 import collections
+import os
 from typing import Any, Tuple
 import logging
 import urllib3
@@ -15,12 +16,25 @@ logging.basicConfig(filename="api_r7_api.log", level=logging.ERROR)
 
 class R7_ISVM_Api:
     def __init__(
-        self, auth: R7_ISVM_Auth, fqdn: str, api_name: str, timeout: Tuple[int, int]
+        self, auth: R7_ISVM_Auth, fqdn: str, api_name: str, timeout: Tuple[int, int],
+        verify_ssl: bool = None
     ) -> None:
         self.auth = auth
         self.fqdn = fqdn
         self.api_name = api_name
         self.timeout = timeout
+        
+        # SSL verification configuration
+        # Check environment variable first, then use parameter, default to True
+        if verify_ssl is None:
+            env_verify = os.getenv('INSIGHTVM_VERIFY_SSL', 'true').lower()
+            self.verify_ssl = env_verify in ('true', '1', 'yes')
+        else:
+            self.verify_ssl = verify_ssl
+        
+        # Suppress urllib3 warnings when SSL verification is disabled
+        if not self.verify_ssl:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _get_api_url(self, call_name: str) -> str:
         """
@@ -87,18 +101,24 @@ class R7_ISVM_Api:
         response = None
         if method == "get":
             response = requests.get(
-                url, headers=headers, params=params, timeout=self.timeout
+                url, headers=headers, params=params, timeout=self.timeout,
+                verify=self.verify_ssl
             )
         elif method == "post":
             response = requests.post(
-                url, headers=headers, json=json_value, timeout=self.timeout
+                url, headers=headers, json=json_value, timeout=self.timeout,
+                verify=self.verify_ssl
             )
         elif method == "put":
             response = requests.put(
-                url, headers=headers, json=json_value, timeout=self.timeout
+                url, headers=headers, json=json_value, timeout=self.timeout,
+                verify=self.verify_ssl
             )
         elif method == "delete":
-            response = requests.delete(url, headers=headers, timeout=self.timeout)
+            response = requests.delete(
+                url, headers=headers, timeout=self.timeout,
+                verify=self.verify_ssl
+            )
         if response is not None:
             response.raise_for_status()
         else:

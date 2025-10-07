@@ -7,7 +7,6 @@ import urllib3
 from dotenv import load_dotenv
 import requests
 from api_r7_auth import load_r7_isvm_api_credentials, get_isvm_basic_auth_header
-from src.rapid7.api_r7_isvm_get_assets import API_ENDPOINT
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,7 +40,7 @@ def _set_up_request():
     # Get the ISVM API credentials and base URL from environment variables
     _, _, isvm_base_url = load_r7_isvm_api_credentials()
     auth_headers = get_isvm_basic_auth_header()
-    url = f"{isvm_base_url}/api/3/{api_endpoint}"
+    url = f"{isvm_base_url}/api/3/asset_groups"
     headers = {
         "Content-Type": "application/json",
         **auth_headers,
@@ -66,4 +65,3 @@ def _set_up_request():
         "vulnerabilities": {},
     }
     return url, headers, payload
-
