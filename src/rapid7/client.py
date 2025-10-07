@@ -10,9 +10,10 @@ from typing import Optional, Tuple
 from .auth import InsightVMAuth
 from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
-from .api.sonar_queries import SonarQueryAPI
 from .api.sites import SiteAPI
+from .api.sonar_queries import SonarQueryAPI
 from .api.scans import ScansAPI
+from .api.reports import ReportsAPI
 
 
 class InsightVMClient:
@@ -29,6 +30,7 @@ class InsightVMClient:
         sonar_queries (SonarQueryAPI): Sonar query operations client
         sites (SiteAPI): Site operations client
         scans (ScansAPI): Scan operations client
+        reports (ReportsAPI): Report operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -116,6 +118,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.scans = ScansAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.reports = ReportsAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     
