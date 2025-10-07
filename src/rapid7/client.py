@@ -10,10 +10,10 @@ from typing import Optional, Tuple
 from .auth import InsightVMAuth
 from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
+from .api.reports import ReportsAPI
+from .api.scans import ScansAPI
 from .api.sites import SiteAPI
 from .api.sonar_queries import SonarQueryAPI
-from .api.scans import ScansAPI
-from .api.reports import ReportsAPI
 
 
 class InsightVMClient:
@@ -74,14 +74,15 @@ class InsightVMClient:
         
         Args:
             username: InsightVM API username (optional, from env
-                     if not provided)
+                if not provided)
             password: InsightVM API password (optional, from env
-                     if not provided)
+                if not provided)
             base_url: InsightVM base URL (optional, from env
-                     if not provided)
+                if not provided)
             verify_ssl: Whether to verify SSL certificates
-                       (default: from env or True)
-            timeout: Tuple of (connect_timeout, read_timeout) in seconds
+                (default: from env or True)
+            timeout: Tuple of (connect_timeout, read_timeout)
+                in seconds
         
         Raises:
             ValueError: If required credentials are missing

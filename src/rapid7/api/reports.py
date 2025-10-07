@@ -171,7 +171,7 @@ class ReportsAPI(BaseAPI):
 
     # Report Generation Operations
 
-    def generate(self, report_id: int) -> int:
+    def generate(self, report_id: int) -> str:
         """
         Generate a report and return the instance ID.
 
@@ -179,14 +179,14 @@ class ReportsAPI(BaseAPI):
             report_id: The identifier of the report to generate
 
         Returns:
-            Integer instance ID of the generated report
+            String instance ID of the generated report
 
         Example:
             >>> instance_id = client.reports.generate(42)
             >>> print(f"Report generation started: {instance_id}")
         """
         result = self._request('POST', f'reports/{report_id}/generate')
-        return result['id']
+        return str(result['id'])
 
     # Report History and Instance Operations
 
@@ -503,7 +503,7 @@ class ReportsAPI(BaseAPI):
             >>> with open("report.pdf.gz", "wb") as f:
             ...     f.write(content)
         """
-        instance_id = str(self.generate(report_id))
+        instance_id = self.generate(report_id)
         self.wait_for_completion(
             report_id,
             instance_id,
