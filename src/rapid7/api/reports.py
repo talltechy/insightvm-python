@@ -59,8 +59,9 @@ class ReportsAPI(BaseAPI):
         Args:
             page: Page number (zero-based)
             size: Number of records per page (max 500)
-            sort: List of sort criteria in format
-                 'property[,ASC|DESC]'
+            sort: List of sort criteria in the format
+                 'property' or 'property,ASC|DESC'
+                 (If direction is omitted, ascending order is used)
 
         Returns:
             Dictionary with 'resources', 'page', and 'links' keys
@@ -386,7 +387,8 @@ class ReportsAPI(BaseAPI):
                 return instance
             elif status in ['failed', 'aborted', 'unknown']:
                 raise RuntimeError(
-                    f"Report generation {status}: {instance}"
+                    f"Report generation {status} for instance "
+                    f"{instance_id} (report {report_id})"
                 )
 
             # Check timeout
