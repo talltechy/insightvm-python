@@ -6,5 +6,6 @@ all inheriting from the BaseAPI class.
 """
 
 from .base import BaseAPI
+from .scans import ScansAPI
 
-__all__ = ['BaseAPI']
+__all__ = ['BaseAPI', 'ScansAPI']

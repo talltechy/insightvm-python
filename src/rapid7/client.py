@@ -12,6 +12,7 @@ from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
 from .api.sonar_queries import SonarQueryAPI
 from .api.sites import SiteAPI
+from .api.scans import ScansAPI
 
 
 class InsightVMClient:
@@ -27,6 +28,7 @@ class InsightVMClient:
         asset_groups (AssetGroupAPI): Asset group operations client
         sonar_queries (SonarQueryAPI): Sonar query operations client
         sites (SiteAPI): Site operations client
+        scans (ScansAPI): Scan operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -69,10 +71,14 @@ class InsightVMClient:
         Initialize the InsightVM client.
         
         Args:
-            username: InsightVM API username (optional, from env if not provided)
-            password: InsightVM API password (optional, from env if not provided)
-            base_url: InsightVM base URL (optional, from env if not provided)
-            verify_ssl: Whether to verify SSL certificates (default: from env or True)
+            username: InsightVM API username (optional, from env
+                     if not provided)
+            password: InsightVM API password (optional, from env
+                     if not provided)
+            base_url: InsightVM base URL (optional, from env
+                     if not provided)
+            verify_ssl: Whether to verify SSL certificates
+                       (default: from env or True)
             timeout: Tuple of (connect_timeout, read_timeout) in seconds
         
         Raises:
@@ -107,6 +113,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.sites = SiteAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.scans = ScansAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     
