@@ -118,8 +118,11 @@ class InsightVMClient:
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit."""
-        # Can add cleanup logic here if needed in the future
+        """Context manager exit.
+        
+        No cleanup is currently required as the client does not maintain
+        persistent connections or resources that need explicit release.
+        """
         pass
 
 
