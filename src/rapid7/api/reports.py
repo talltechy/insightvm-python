@@ -42,6 +42,8 @@ class ReportsAPI(BaseAPI):
         All attributes inherited from BaseAPI including auth,
         base_url, verify_ssl, and timeout.
     """
+    
+    MAX_PAGE_SIZE = 500
 
     # Report Configuration Operations
 
@@ -68,6 +70,9 @@ class ReportsAPI(BaseAPI):
             >>> for report in reports['resources']:
             ...     print(f"{report['id']}: {report['name']}")
         """
+        # Validate size parameter
+        size = min(size, self.MAX_PAGE_SIZE)
+        
         params: Dict[str, Any] = {'page': page, 'size': size}
         if sort:
             params['sort'] = sort
@@ -385,10 +390,12 @@ class ReportsAPI(BaseAPI):
                 )
 
             # Check timeout
-            if timeout and (time.time() - start_time) > timeout:
-                raise TimeoutError(
-                    f"Report generation timed out after {timeout} seconds"
-                )
+            if timeout is not None:
+                elapsed = time.time() - start_time
+                if elapsed >= timeout:
+                    raise TimeoutError(
+                        f"Report generation timed out after {timeout} seconds"
+                    )
 
             time.sleep(poll_interval)
 
@@ -457,7 +464,7 @@ class ReportsAPI(BaseAPI):
         all_reports = []
         page = 0
         while True:
-            response = self.list(page=page, size=500, sort=sort)
+            response = self.list(page=page, size=self.MAX_PAGE_SIZE, sort=sort)
             resources = response.get('resources', [])
             if not resources:
                 break
