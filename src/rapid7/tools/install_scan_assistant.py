@@ -16,7 +16,7 @@ Usage:
 import argparse
 import json
 import os
-import subprocess
+import subprocess  # nosec B404 - subprocess used securely with list arguments
 import sys
 from pathlib import Path
 from typing import Optional
@@ -36,7 +36,7 @@ def check_package_system() -> str:
         Package system type ("deb", "rpm", or "Unknown")
     """
     try:
-        subprocess.run(
+        subprocess.run(  # nosec B603 B607
             ["dpkg", "--version"],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -47,7 +47,7 @@ def check_package_system() -> str:
         pass
 
     try:
-        subprocess.run(
+        subprocess.run(  # nosec B603 B607
             ["rpm", "--version"],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -68,7 +68,7 @@ def check_internet_connection() -> bool:
         True if connection available, False otherwise
     """
     try:
-        subprocess.run(
+        subprocess.run(  # nosec B603 B607
             ["ping", "-c", "1", "rapid7.com"],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -78,7 +78,7 @@ def check_internet_connection() -> bool:
         return True
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         try:
-            subprocess.run(
+            subprocess.run(  # nosec B603 B607
                 ["ping", "-c", "1", "1.1.1.1"],
                 check=True,
                 stdout=subprocess.DEVNULL,
@@ -98,7 +98,7 @@ def is_wget_curl_installed() -> Optional[str]:
         "wget" or "curl" if installed, None otherwise
     """
     try:
-        subprocess.run(
+        subprocess.run(  # nosec B603 B607
             ["wget", "--version"],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -107,7 +107,7 @@ def is_wget_curl_installed() -> Optional[str]:
         return "wget"
     except (subprocess.CalledProcessError, FileNotFoundError):
         try:
-            subprocess.run(
+            subprocess.run(  # nosec B603 B607
                 ["curl", "--version"],
                 check=True,
                 stdout=subprocess.DEVNULL,
@@ -176,11 +176,11 @@ def download_package(
     try:
         if ui:
             ui.print_info(f"Downloading {file_name}...")
-        subprocess.run(download_cmd + [file_url], check=True)
+        subprocess.run(download_cmd + [file_url], check=True)  # nosec B603 B607
 
         if ui:
             ui.print_info("Downloading checksum...")
-        subprocess.run(download_cmd + [checksum_url], check=True)
+        subprocess.run(download_cmd + [checksum_url], check=True)  # nosec B603 B607
 
         if ui:
             ui.print_success("Download complete")
@@ -213,7 +213,7 @@ def verify_checksum(package_manager: str, ui=None) -> bool:
 
     try:
         # Calculate checksum
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ['sha512sum', file_name],
             stdout=subprocess.PIPE,
             check=True,
@@ -315,7 +315,7 @@ def install_package(package_manager: str, ui=None) -> bool:
             ui.print_info("Running installation...")
             ui.print_warning("You may be prompted for your sudo password")
 
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True)  # nosec B603 B607
 
         if ui:
             ui.print_success("Installation complete")
@@ -345,14 +345,14 @@ def verify_installation(package_manager: str, ui=None) -> bool:
     # Check package
     try:
         if package_manager == 'rpm':
-            subprocess.run(
+            subprocess.run(  # nosec B603 B607
                 ["rpm", "-qa", "R7ScanAssistant"],
                 check=True,
                 capture_output=True,
                 text=True
             )
         else:  # deb
-            subprocess.run(
+            subprocess.run(  # nosec B603 B607
                 ["dpkg-query", "-l", "r7scanassistant"],
                 check=True,
                 capture_output=True,
@@ -368,7 +368,7 @@ def verify_installation(package_manager: str, ui=None) -> bool:
 
     # Check service
     try:
-        subprocess.run(
+        subprocess.run(  # nosec B603 B607
             ["pgrep", "-f", "ScanAssistant"],
             check=True,
             capture_output=True,

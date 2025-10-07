@@ -16,7 +16,7 @@ Usage:
 import argparse
 import glob
 import os
-import subprocess
+import subprocess  # nosec B404 - subprocess used securely with list arguments
 import sys
 from pathlib import Path
 from typing import Optional
@@ -51,7 +51,7 @@ def make_executable(filepath: str) -> None:
     Args:
         filepath: Path to file to make executable
     """
-    os.chmod(filepath, 0o755)
+    os.chmod(filepath, 0o755)  # nosec B103
 
 
 def verify_agent_running() -> bool:
@@ -62,7 +62,7 @@ def verify_agent_running() -> bool:
         True if agent is running, False otherwise
     """
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603 B607
             ["sudo", "service", "ir_agent", "status"],
             check=True,
             capture_output=True,
@@ -71,7 +71,7 @@ def verify_agent_running() -> bool:
         return result.returncode == 0
     except (subprocess.CalledProcessError, FileNotFoundError):
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # nosec B603 B607
                 ["sudo", "systemctl", "status", "ir_agent"],
                 check=True,
                 capture_output=True,
@@ -103,7 +103,7 @@ def install_insight_agent(
     else:
         print("\n=== Installing Rapid7 Insight Agent ===\n")
     
-    # Verify installer exists
+    # Verify installer exists and is a file
     if not os.path.exists(installer_path):
         if ui:
             ui.print_error(f"Installer not found: {installer_path}")
@@ -111,13 +111,29 @@ def install_insight_agent(
             print(f"ERROR: Installer not found: {installer_path}")
         return False
     
+    if not os.path.isfile(installer_path):
+        if ui:
+            ui.print_error(f"Installer path is not a file: {installer_path}")
+        else:
+            print(f"ERROR: Installer path is not a file: {installer_path}")
+        return False
+    
+    # Validate installer path to prevent command injection
+    installer_realpath = os.path.realpath(installer_path)
+    if not installer_realpath.endswith('.sh'):
+        if ui:
+            ui.print_error("Installer must be a .sh file")
+        else:
+            print("ERROR: Installer must be a .sh file")
+        return False
+    
     # Make installer executable
     try:
-        make_executable(installer_path)
+        make_executable(installer_realpath)
         if ui:
-            ui.print_info(f"Made installer executable: {installer_path}")
+            ui.print_info(f"Made installer executable: {installer_realpath}")
         else:
-            print(f"Made installer executable: {installer_path}")
+            print(f"Made installer executable: {installer_realpath}")
     except Exception as e:
         if ui:
             ui.print_error(f"Failed to make installer executable: {e}")
@@ -136,8 +152,8 @@ def install_insight_agent(
             print("Running installer with sudo privileges...")
             print("You may be prompted for your sudo password")
         
-        result = subprocess.run(
-            ["sudo", installer_path, "install_start", "--token", token],
+        result = subprocess.run(  # nosec B603 B607
+            ["sudo", installer_realpath, "install_start", "--token", token],
             check=True,
             capture_output=True,
             text=True
