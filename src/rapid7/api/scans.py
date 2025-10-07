@@ -466,7 +466,7 @@ class ScansAPI(BaseAPI):
             
             # Check if scan is in a terminal state
             terminal_states = [
-                'finished', 'stopped', 'error', 'paused', 'aborted'
+                'finished', 'stopped', 'error', 'aborted'
             ]
             if status in terminal_states:
                 return scan
@@ -499,12 +499,13 @@ class ScansAPI(BaseAPI):
                 - id: Scan identifier
                 - name: Scan name
                 - status: Current status
-                - progress: Percentage complete (for running scans)
                 - assets_scanned: Number of assets scanned
                 - vulnerabilities: Vulnerability counts by severity
                 - duration: Scan duration
                 - start_time: When scan started
                 - end_time: When scan ended (if complete)
+                - engine_name: Name of scan engine
+                - message: Status message
         
         Example:
             ```python

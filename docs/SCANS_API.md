@@ -318,6 +318,8 @@ for scan in completed[:5]:
 ### Scheduled Scanning Workflow
 
 ```python
+from datetime import datetime
+
 # Weekly security audit workflow
 def run_weekly_audit():
     # Start scan
@@ -388,15 +390,16 @@ def analyze_scan_history(site_id, days=30):
     # Analyze results
     total_scans = len(scans['resources'])
     total_assets = sum(s['assets'] for s in scans['resources'])
-    avg_duration = sum(
-        parse_duration(s['duration']) 
-        for s in scans['resources']
-    ) / total_scans if total_scans > 0 else 0
     
     print(f"Scan History for Site {site_id} (last {days} days):")
     print(f"Total scans: {total_scans}")
     print(f"Total assets scanned: {total_assets}")
-    print(f"Average duration: {avg_duration:.2f} minutes")
+    
+    # Show recent scan durations
+    if scans['resources']:
+        print("\nRecent scan durations:")
+        for scan in scans['resources'][:5]:
+            print(f"- {scan['scanName']}: {scan['duration']}")
 
 analyze_scan_history(site_id=42)
 ```
