@@ -10,9 +10,10 @@ from typing import Optional, Tuple
 from .auth import InsightVMAuth
 from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
-from .api.sonar_queries import SonarQueryAPI
-from .api.sites import SiteAPI
+from .api.reports import ReportsAPI
 from .api.scans import ScansAPI
+from .api.sites import SiteAPI
+from .api.sonar_queries import SonarQueryAPI
 
 
 class InsightVMClient:
@@ -29,6 +30,7 @@ class InsightVMClient:
         sonar_queries (SonarQueryAPI): Sonar query operations client
         sites (SiteAPI): Site operations client
         scans (ScansAPI): Scan operations client
+        reports (ReportsAPI): Report operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -72,14 +74,15 @@ class InsightVMClient:
         
         Args:
             username: InsightVM API username (optional, from env
-                     if not provided)
+                if not provided)
             password: InsightVM API password (optional, from env
-                     if not provided)
+                if not provided)
             base_url: InsightVM base URL (optional, from env
-                     if not provided)
+                if not provided)
             verify_ssl: Whether to verify SSL certificates
-                       (default: from env or True)
-            timeout: Tuple of (connect_timeout, read_timeout) in seconds
+                (default: from env or True)
+            timeout: Tuple of (connect_timeout, read_timeout)
+                in seconds
         
         Raises:
             ValueError: If required credentials are missing
@@ -116,6 +119,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.scans = ScansAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.reports = ReportsAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     

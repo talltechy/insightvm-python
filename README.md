@@ -12,6 +12,10 @@ A modern Python client library for Rapid7 InsightVM and Palo Alto Cortex XDR API
 - **Unified Client Interface** - Single entry point with organized sub-clients
 - **Comprehensive Asset Management** - Full CRUD operations with auto-pagination
 - **Asset Group Operations** - Create, update, delete, and manage dynamic groups
+- **Site Management** - Complete site lifecycle management and configuration
+- **Scan Operations** - Start, stop, pause, resume, and monitor vulnerability scans
+- **Report Management** - Generate, download, and manage security reports
+- **Sonar Query Integration** - Query and analyze Sonar data
 - **Type-Safe** - Complete type hints throughout the codebase
 - **Self-Signed Certificate Support** - Configurable SSL verification for enterprise environments
 - **Context Manager Support** - Proper resource cleanup
@@ -55,15 +59,26 @@ from rapid7 import InsightVMClient
 
 # Create client (loads credentials from environment)
 with InsightVMClient() as client:
-    # List assets
+    # Asset Management
     assets = client.assets.list(page=0, size=100)
     print(f"Found {len(assets['resources'])} assets")
     
-    # Get specific asset
-    asset = client.assets.get_asset(asset_id=123)
-    print(f"Asset: {asset['hostname']}")
+    # Scan Operations
+    scan_id = client.scans.start_site_scan(
+        site_id=123,
+        scan_name="Security Audit"
+    )
+    print(f"Started scan: {scan_id}")
     
-    # Create high-risk asset group
+    # Report Generation
+    content = client.reports.generate_and_download(
+        report_id=42,
+        timeout=3600
+    )
+    with open("security_report.pdf.gz", "wb") as f:
+        f.write(content)
+    
+    # Asset Group Management
     group = client.asset_groups.create_high_risk(
         name="Critical Assets",
         threshold=25000
@@ -73,10 +88,17 @@ with InsightVMClient() as client:
 
 ## 📚 Documentation
 
+### Core Documentation
 - **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
 - **[Usage Examples](docs/EXAMPLES.md)** - Practical code examples
 - **[Migration Guide](MIGRATION.md)** - Upgrading from v1.0 to v2.0
 - **[Contributing](CONTRIBUTING.md)** - Development guidelines
+
+### API Module Documentation
+- **[Scans API](docs/SCANS_API.md)** - Scan management and monitoring
+- **[Reports API](docs/REPORTS_API.md)** - Report generation and download
+- **[Site Management](docs/SITE_MANAGEMENT.md)** - Site operations and configuration
+- **[UI Improvements](docs/UI_IMPROVEMENTS.md)** - User interface enhancements
 
 ## 🏗️ Architecture
 
@@ -84,16 +106,28 @@ with InsightVMClient() as client:
 
 ```
 insightvm-python/
-├── src/rapid7/           # Main package
-│   ├── auth.py          # Authentication classes
-│   ├── client.py        # InsightVMClient
-│   └── api/             # API modules
-│       ├── base.py      # BaseAPI foundation
-│       ├── assets.py    # Asset operations
-│       └── asset_groups.py  # Asset group operations
-├── requirements.txt     # Dependencies
-├── .env.example        # Configuration template
-└── docs/               # Documentation
+├── src/rapid7/              # Main package
+│   ├── auth.py             # Authentication classes
+│   ├── client.py           # InsightVMClient
+│   ├── config.py           # Configuration management
+│   ├── constants.py        # API constants
+│   ├── ui.py              # User interface utilities
+│   └── api/               # API modules
+│       ├── base.py        # BaseAPI foundation
+│       ├── assets.py      # Asset operations
+│       ├── asset_groups.py # Asset group operations
+│       ├── scans.py       # Scan management
+│       ├── reports.py     # Report generation
+│       ├── sites.py       # Site management
+│       └── sonar_queries.py # Sonar integration
+├── docs/                  # Documentation
+│   ├── API_REFERENCE.md
+│   ├── SCANS_API.md
+│   ├── REPORTS_API.md
+│   └── ...
+├── requirements.txt       # Dependencies
+├── .env.example          # Configuration template
+└── SECURITY.md           # Security policy
 ```
 
 ### Design Patterns
@@ -102,16 +136,23 @@ insightvm-python/
 ```python
 from rapid7.api.base import BaseAPI
 
-class AssetAPI(BaseAPI):
+class ScansAPI(BaseAPI):
+    MAX_PAGE_SIZE = 500  # Optimization constant
+    
     def list(self, page=0, size=500):
-        return self._request('GET', '/assets', params={'page': page, 'size': size})
+        size = min(size, self.MAX_PAGE_SIZE)
+        return self._request('GET', 'scans', params={'page': page, 'size': size})
 ```
 
 **Unified Client** - Single entry point with sub-clients:
 ```python
 client = InsightVMClient()
-client.assets.list()        # Asset operations
-client.asset_groups.list()  # Asset group operations
+client.assets.list()         # Asset operations
+client.asset_groups.list()   # Asset group operations
+client.scans.list()          # Scan operations
+client.reports.list()        # Report operations
+client.sites.list()          # Site operations
+client.sonar_queries.list()  # Sonar operations
 ```
 
 ## 🔧 Advanced Usage
@@ -131,12 +172,71 @@ client = InsightVMClient(
 )
 ```
 
+### Scan Management
+
+```python
+# Start a scan for a site
+scan_id = client.scans.start_site_scan(
+    site_id=123,
+    scan_name="Monthly Security Scan",
+    scan_template_id="full-audit-without-web-spider"
+)
+
+# Monitor scan progress
+scan = client.scans.get_scan(scan_id)
+print(f"Status: {scan['status']}")
+print(f"Progress: {scan.get('tasks', {}).get('pending', 0)} tasks pending")
+
+# Wait for completion
+final_scan = client.scans.wait_for_completion(
+    scan_id,
+    poll_interval=60,
+    timeout=7200
+)
+
+# Stop a running scan if needed
+client.scans.stop_scan(scan_id)
+```
+
+### Report Generation
+
+```python
+# List available report templates
+templates = client.reports.get_templates()
+for template in templates['resources']:
+    print(f"{template['id']}: {template['name']}")
+
+# Generate and download a report
+content = client.reports.generate_and_download(
+    report_id=42,
+    poll_interval=30,
+    timeout=3600
+)
+
+# Save the report (usually GZip compressed)
+with open("vulnerability_report.pdf.gz", "wb") as f:
+    f.write(content)
+
+# Or manage report generation manually
+instance_id = client.reports.generate(report_id=42)
+client.reports.wait_for_completion(42, instance_id)
+report_content = client.reports.download(42, instance_id)
+```
+
 ### Auto-Pagination
 
 ```python
 # Get all assets (handles pagination automatically)
 all_assets = client.assets.get_all(batch_size=500)
 print(f"Total assets: {len(all_assets)}")
+
+# Get all scans across all pages
+all_scans = client.scans.get_all_scans()
+print(f"Total scans: {len(all_scans)}")
+
+# Get all reports
+all_reports = client.reports.get_all_reports()
+print(f"Total reports: {len(all_reports)}")
 ```
 
 ### Advanced Search
@@ -150,6 +250,9 @@ results = client.assets.search({
     ],
     "match": "all"
 })
+
+# Filter scans by status
+active_scans = client.scans.list(active=True)
 ```
 
 ### Error Handling
@@ -159,27 +262,52 @@ import requests
 
 try:
     client = InsightVMClient()
-    assets = client.assets.get_all()
+    
+    # Start a scan
+    scan_id = client.scans.start_site_scan(site_id=123)
+    
+    # Wait for completion with timeout
+    result = client.scans.wait_for_completion(
+        scan_id, 
+        timeout=3600
+    )
+    
 except ValueError as e:
     print(f"Configuration error: {e}")
+except TimeoutError as e:
+    print(f"Operation timed out: {e}")
 except requests.exceptions.RequestException as e:
     print(f"API error: {e}")
 ```
 
 ## 🔐 Security
 
+### Best Practices
+
 - **No Hardcoded Credentials** - All credentials loaded from environment variables
 - **HTTPS Only** - All API communication over secure connections
-- **SSL Verification** - Configurable for self-signed certificates
+- **SSL Verification** - Configurable for self-signed certificates (see [SECURITY.md](SECURITY.md))
 - **Secret Management** - Use `.env` for development, secret management services for production
+- **HTTPBasicAuth** - Industry-standard authentication pattern
+- **Timeout Configuration** - Prevent hanging connections
+
+### Security Considerations
+
+⚠️ **Self-Signed Certificates**: When using `verify_ssl=False`, you bypass SSL certificate validation. Only use this in trusted environments with self-signed certificates.
+
+See [SECURITY.md](SECURITY.md) for complete security policy and vulnerability reporting.
 
 ## 🧪 Testing
 
 The v2.0 release has been tested against live InsightVM instances:
 - ✅ Authentication with HTTPBasicAuth
-- ✅ Asset retrieval (1182+ assets)
+- ✅ Asset retrieval and management (1182+ assets tested)
 - ✅ Asset group creation and management
+- ✅ Scan operations (start, stop, pause, resume)
+- ✅ Report generation and download
+- ✅ Site management operations
 - ✅ Self-signed certificate handling
+- ✅ Auto-pagination for large datasets
 
 ## 📋 Requirements
 
@@ -190,15 +318,38 @@ The v2.0 release has been tested against live InsightVM instances:
 
 ## 🔄 Version History
 
-### v2.0.0 (October 2025) - Major Refactoring
+### v2.0.0 (October 2025) - Major Refactoring & Sprint 3
+**Core Refactoring:**
 - ✅ Replaced manual Base64 encoding with HTTPBasicAuth
 - ✅ Unified client interface with sub-clients
 - ✅ BaseAPI inheritance pattern for all modules
-- ✅ Comprehensive asset and asset group operations
 - ✅ Type hints throughout
 - ✅ Context manager support
 - ✅ SSL verification configuration
-- ⚠️ **Breaking changes** - See [MIGRATION.md](MIGRATION.md) for upgrade guide
+
+**Sprint 3: Core Operations (NEW):**
+- ✅ **Scans API** - Complete scan lifecycle management (Issue #66, PR #83)
+  - Start, stop, pause, resume scans
+  - Monitor scan progress and status
+  - Site-based and adhoc scanning
+  - Scan history and statistics
+- ✅ **Reports API** - Full report management (Issue #67, PR #82)
+  - Report configuration CRUD
+  - Report generation and monitoring
+  - Download report content
+  - Template and format discovery
+- ✅ **Optimization Patterns**
+  - MAX_PAGE_SIZE constants for efficient pagination
+  - Enhanced timeout validation
+  - Type consistency improvements
+
+**Previously Supported:**
+- ✅ Comprehensive asset and asset group operations
+- ✅ Site management
+- ✅ Sonar query integration
+
+**Breaking Changes:**
+- ⚠️ See [MIGRATION.md](MIGRATION.md) for upgrade guide from v1.0
 
 ### v1.0.0 (Previous)
 - Initial release with basic functionality
@@ -207,11 +358,22 @@ The v2.0 release has been tested against live InsightVM instances:
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
+### Development Workflow
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/issue-XX-description`)
+3. Follow the GitHub workflow (issues → branches → PRs)
+4. Commit with conventional commit format
+5. Push to the branch (`git push origin feature/issue-XX-description`)
+6. Open a Pull Request
+
+### Current Sprint Progress
+
+**Sprint 3: Core Operations** (High Priority)
+- ✅ Issue #66: Scans API Module (COMPLETE - PR #83)
+- ✅ Issue #67: Reports API Module (COMPLETE - PR #82)
+- ⏳ Issue #68: Scan Engines API Module (NEXT)
+- ⏳ Issue #69: Scan Templates API Module
 
 ## 📖 API References
 
@@ -235,6 +397,7 @@ For issues, questions, or contributions, please:
 - Open an issue on GitHub
 - Check the [documentation](docs/)
 - Review the [examples](docs/EXAMPLES.md)
+- See [SECURITY.md](SECURITY.md) for security concerns
 
 ---
 
