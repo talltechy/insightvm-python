@@ -91,6 +91,9 @@ class ScansAPI(BaseAPI):
             )
             ```
         """
+        # Validate size parameter
+        size = min(size, 500)
+        
         params: Dict[str, Any] = {
             'page': page,
             'size': size
@@ -119,8 +122,8 @@ class ScansAPI(BaseAPI):
                 - id: Scan identifier
                 - scanName: Name of the scan
                 - scanType: Type of scan
-                - status: Current status (running, finished,
-                  stopped, etc.)
+                - status: Current status (running, finished, stopped,
+                  etc.)
                 - startTime: When the scan started
                 - endTime: When the scan completed (if finished)
                 - duration: Scan duration
@@ -185,6 +188,9 @@ class ScansAPI(BaseAPI):
             )
             ```
         """
+        # Validate size parameter
+        size = min(size, 500)
+        
         params: Dict[str, Any] = {
             'page': page,
             'size': size
@@ -437,10 +443,9 @@ class ScansAPI(BaseAPI):
             Final scan details dictionary
         
         Raises:
-            TimeoutError: If timeout is reached before scan
-                completes
-            requests.exceptions.HTTPError: If scan not found
-                or access denied
+            TimeoutError: If timeout is reached before scan completes
+            requests.exceptions.HTTPError: If scan not found or
+                access denied
         
         Example:
             ```python
@@ -472,7 +477,7 @@ class ScansAPI(BaseAPI):
                 return scan
             
             # Check timeout
-            if timeout:
+            if timeout is not None:
                 elapsed = time.time() - start_time
                 if elapsed >= timeout:
                     msg = (
