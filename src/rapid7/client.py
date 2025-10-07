@@ -10,6 +10,7 @@ from typing import Optional, Tuple
 from .auth import InsightVMAuth
 from .api.assets import AssetAPI
 from .api.asset_groups import AssetGroupAPI
+from .api.sonar_queries import SonarQueryAPI
 
 
 class InsightVMClient:
@@ -23,6 +24,7 @@ class InsightVMClient:
         auth (InsightVMAuth): Authentication handler
         assets (AssetAPI): Asset operations client
         asset_groups (AssetGroupAPI): Asset group operations client
+        sonar_queries (SonarQueryAPI): Sonar query operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -93,8 +95,15 @@ class InsightVMClient:
         )
         
         # Initialize API clients
-        self.assets = AssetAPI(self.auth, verify_ssl=verify_ssl, timeout=timeout)
-        self.asset_groups = AssetGroupAPI(self.auth, verify_ssl=verify_ssl, timeout=timeout)
+        self.assets = AssetAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.asset_groups = AssetGroupAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.sonar_queries = SonarQueryAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
     
     def __repr__(self):
         return f"InsightVMClient(base_url='{self.auth.base_url}')"
