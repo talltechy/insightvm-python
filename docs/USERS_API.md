@@ -1075,4 +1075,68 @@ user2 = get_user_by_login_cached("john.doe")
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/
+| GET | `/api/3/users` | List all users |
+| GET | `/api/3/users/{id}` | Get user details |
+| POST | `/api/3/users` | Create new user |
+| PUT | `/api/3/users/{id}` | Update user |
+| DELETE | `/api/3/users/{id}` | Delete user |
+| GET | `/api/3/users/{id}/sites` | Get user's sites |
+| PUT | `/api/3/users/{id}/sites` | Set user's sites (bulk) |
+| PUT | `/api/3/users/{id}/sites/{siteId}` | Grant site access |
+| DELETE | `/api/3/users/{id}/sites/{siteId}` | Revoke site access |
+| DELETE | `/api/3/users/{id}/sites` | Revoke all site access |
+| GET | `/api/3/users/{id}/asset_groups` | Get user's asset groups |
+| PUT | `/api/3/users/{id}/asset_groups` | Set user's asset groups (bulk) |
+| PUT | `/api/3/users/{id}/asset_groups/{groupId}` | Grant asset group access |
+| DELETE | `/api/3/users/{id}/asset_groups/{groupId}` | Revoke asset group access |
+| DELETE | `/api/3/users/{id}/asset_groups` | Revoke all asset group access |
+| GET | `/api/3/users/{id}/privileges` | Get user privileges |
+| PUT | `/api/3/users/{id}/password` | Reset password |
+| DELETE | `/api/3/users/{id}/lock` | Unlock user |
+| GET | `/api/3/users/{id}/2FA` | Get 2FA key |
+| DELETE | `/api/3/users/{id}/2FA` | Remove 2FA |
+
+## Error Codes
+
+Common HTTP status codes returned by the Users API:
+
+| Code | Description |
+|------|-------------|
+| 200 | Success |
+| 201 | Created successfully |
+| 400 | Bad request - invalid input |
+| 401 | Unauthorized - invalid credentials |
+| 403 | Forbidden - insufficient permissions |
+| 404 | Not found - user does not exist |
+| 500 | Internal server error |
+
+## Permissions Required
+
+Most user management operations require **Global Administrator** privilege. Exceptions:
+
+- **Get own user details**: Current user can retrieve their own information
+- **Reset own password**: Users can change their own password
+- **Get user privileges**: Users can view their own privileges
+
+## Notes
+
+- User IDs are permanent and do not change
+- Login usernames must be unique
+- Passwords must meet minimum complexity requirements
+- Site and asset group access cannot be granted to users with `allSites` or `allAssetGroups` permissions
+- Locked accounts must be unlocked before users can authenticate
+- Disabled accounts cannot authenticate even if unlocked
+- 2FA keys are only returned if 2FA is configured
+- External authentication (LDAP, SAML, Kerberos) requires authentication source configuration
+
+## Related Documentation
+
+- [Authentication API](./AUTHENTICATION_API.md)
+- [Roles API](./ROLES_API.md)
+- [Sites API](./SITES_API.md)
+- [Asset Groups API](./ASSET_GROUPS_API.md)
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-01-07

@@ -302,7 +302,7 @@ class UserAPI(BaseAPI):
         # API expects JSON array of site IDs
         return self._request(
             'PUT', f'users/{user_id}/sites',
-            json={'ids': site_ids} if site_ids else {})
+            json={'ids': site_ids})
 
     def grant_site_access(self, user_id: int,
                           site_id: int) -> Dict[str, Any]:
@@ -409,9 +409,9 @@ class UserAPI(BaseAPI):
             ...     user_id=42, asset_group_ids=[])
         """
         # API expects JSON array of asset group IDs
-        data = {'ids': asset_group_ids} if asset_group_ids else {}
-        return self._request('PUT', f'users/{user_id}/asset_groups',
-                             json=data)
+        return self._request(
+            'PUT', f'users/{user_id}/asset_groups',
+            json={'ids': asset_group_ids})
 
     def grant_asset_group_access(self, user_id: int,
                                   asset_group_id: int) -> Dict[str, Any]:
@@ -454,8 +454,8 @@ class UserAPI(BaseAPI):
             >>> client.users.revoke_asset_group_access(
             ...     user_id=42, asset_group_id=5)
         """
-        return self._request('DELETE',
-                             f'users/{user_id}/asset_groups/{asset_group_id}')
+        endpoint = f'users/{user_id}/asset_groups/{asset_group_id}'
+        return self._request('DELETE', endpoint)
 
     def revoke_all_asset_group_access(self, user_id: int) -> Dict[str, Any]:
         """
@@ -620,12 +620,15 @@ class UserAPI(BaseAPI):
         
         return all_users
 
-    def get_by_login(self, login: str) -> Optional[Dict[str, Any]]:
+    def get_by_login(self, login: str,
+                     users: Optional[List[Dict[str, Any]]] = None
+                     ) -> Optional[Dict[str, Any]]:
         """
         Find a user by their login username.
         
         Args:
             login: The username to search for
+            users: Optional pre-fetched list of users (for caching)
         
         Returns:
             User object if found, None otherwise
@@ -634,16 +637,28 @@ class UserAPI(BaseAPI):
             >>> user = client.users.get_by_login("john.doe")
             >>> if user:
             ...     print(f"Found user: {user['name']}")
+            
+            >>> # With caching to avoid redundant API calls
+            >>> all_users = client.users.get_all()
+            >>> user1 = client.users.get_by_login(
+            ...     "john.doe", users=all_users)
+            >>> user2 = client.users.get_by_login(
+            ...     "jane.smith", users=all_users)
         """
-        all_users = self.get_all()
+        all_users = users if users is not None else self.get_all()
         for user in all_users:
             if user.get('login', '').lower() == login.lower():
                 return user
         return None
 
-    def get_enabled_users(self) -> List[Dict[str, Any]]:
+    def get_enabled_users(self,
+                          users: Optional[List[Dict[str, Any]]] = None
+                          ) -> List[Dict[str, Any]]:
         """
         Retrieve all enabled user accounts.
+        
+        Args:
+            users: Optional pre-fetched list of users (for caching)
         
         Returns:
             List of enabled user objects
@@ -651,13 +666,25 @@ class UserAPI(BaseAPI):
         Example:
             >>> enabled = client.users.get_enabled_users()
             >>> print(f"Active users: {len(enabled)}")
+            
+            >>> # With caching to avoid redundant API calls
+            >>> all_users = client.users.get_all()
+            >>> enabled = client.users.get_enabled_users(
+            ...     users=all_users)
+            >>> locked = client.users.get_locked_users(
+            ...     users=all_users)
         """
-        all_users = self.get_all()
+        all_users = users if users is not None else self.get_all()
         return [user for user in all_users if user.get('enabled', False)]
 
-    def get_locked_users(self) -> List[Dict[str, Any]]:
+    def get_locked_users(self,
+                         users: Optional[List[Dict[str, Any]]] = None
+                         ) -> List[Dict[str, Any]]:
         """
         Retrieve all locked user accounts.
+        
+        Args:
+            users: Optional pre-fetched list of users (for caching)
         
         Returns:
             List of locked user objects
@@ -667,16 +694,24 @@ class UserAPI(BaseAPI):
             >>> for user in locked:
             ...     print(f"Locked: {user['login']}")
             ...     client.users.unlock_user(user['id'])
+            
+            >>> # With caching to avoid redundant API calls
+            >>> all_users = client.users.get_all()
+            >>> locked = client.users.get_locked_users(
+            ...     users=all_users)
         """
-        all_users = self.get_all()
+        all_users = users if users is not None else self.get_all()
         return [user for user in all_users if user.get('locked', False)]
 
-    def get_users_by_role(self, role_id: str) -> List[Dict[str, Any]]:
+    def get_users_by_role(self, role_id: str,
+                          users: Optional[List[Dict[str, Any]]] = None
+                          ) -> List[Dict[str, Any]]:
         """
         Retrieve all users with a specific role.
         
         Args:
             role_id: Role identifier (e.g., 'global-admin', 'user')
+            users: Optional pre-fetched list of users (for caching)
         
         Returns:
             List of user objects with the specified role
@@ -687,8 +722,15 @@ class UserAPI(BaseAPI):
             >>> print(f"Administrators: {len(admins)}")
             >>> for admin in admins:
             ...     print(f"- {admin['name']} ({admin['login']})")
+            
+            >>> # With caching to avoid redundant API calls
+            >>> all_users = client.users.get_all()
+            >>> admins = client.users.get_users_by_role(
+            ...     'global-admin', users=all_users)
+            >>> regular = client.users.get_users_by_role(
+            ...     'user', users=all_users)
         """
-        all_users = self.get_all()
+        all_users = users if users is not None else self.get_all()
         return [
             user for user in all_users
             if user.get('role', {}).get('id', '') == role_id
