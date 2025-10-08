@@ -31,7 +31,6 @@ Examples:
         client.users.grant_site_access(user_id=42, site_id=10)
 
 Author: InsightVM-Python Development Team
-Version: 2.0.0
 """
 
 from typing import Dict, List, Optional, Any, Tuple

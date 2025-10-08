@@ -1138,5 +1138,4 @@ Most user management operations require **Global Administrator** privilege. Exce
 
 ---
 
-**Version**: 2.0.0  
 **Last Updated**: 2025-01-07
