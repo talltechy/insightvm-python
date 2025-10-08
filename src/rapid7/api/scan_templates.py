@@ -324,9 +324,10 @@ class ScanTemplateAPI(BaseAPI):
         """
         response = self.list()
         templates = response.get('resources', [])
-        # Built-in templates typically have specific IDs like 'full-audit-without-web-spider'
-        # Custom templates have numeric IDs
-        return [t for t in templates if not str(t.get('id', '')).isdigit()]
+        # Use 'builtin' field if available, else fall back to ID check
+        return [t for t in templates
+                if t.get('builtin',
+                         not str(t.get('id', '')).isdigit())]
     
     def clone_template(self, template_id: str, new_name: str, 
                       new_description: str = "") -> Dict[str, Any]:
@@ -362,18 +363,21 @@ class ScanTemplateAPI(BaseAPI):
         source.pop('id', None)
         source.pop('links', None)
         
-        # Remove name and description from kwargs and pass as positional arguments
-        source.pop('name', None)  # Remove original name
-        source.pop('description', None)  # Remove original description
+        # Remove name and description - pass as positional args
+        source.pop('name', None)
+        source.pop('description', None)
         
-        # Create the new template with new name/description as positional args
+        # Create the new template with new name/description
         return self.create(new_name, new_description, **source)
     
-    def configure_performance(self, template_id: str, 
-                            max_parallel_assets: Optional[int] = None,
-                            max_scan_processes: Optional[int] = None,
-                            packet_rate_max: Optional[int] = None,
-                            packet_rate_min: Optional[int] = None) -> Dict[str, Any]:
+    def configure_performance(
+        self,
+        template_id: str,
+        max_parallel_assets: Optional[int] = None,
+        max_scan_processes: Optional[int] = None,
+        packet_rate_max: Optional[int] = None,
+        packet_rate_min: Optional[int] = None
+    ) -> Dict[str, Any]:
         """
         Configure performance settings for a scan template.
         
@@ -407,7 +411,10 @@ class ScanTemplateAPI(BaseAPI):
         
         # Update template-level settings
         if update_data:
-            self.update(template_id, **update_data)
+            result = self.update(template_id, **update_data)
+            # If no packet rate updates, return this result
+            if packet_rate_max is None and packet_rate_min is None:
+                return result
         
         # Update discovery performance if packet rates specified
         if packet_rate_max is not None or packet_rate_min is not None:
@@ -425,10 +432,14 @@ class ScanTemplateAPI(BaseAPI):
             
             return self.update_discovery(template_id, **discovery)
         
-        return {'message': 'Performance settings updated'}
+        # If we get here, no updates were made - return template info
+        return self.get(template_id)
     
-    def enable_vulnerability_categories(self, template_id: str, 
-                                       categories: List[str]) -> Dict[str, Any]:
+    def enable_vulnerability_categories(
+        self,
+        template_id: str,
+        categories: List[str]
+    ) -> Dict[str, Any]:
         """
         Enable specific vulnerability check categories.
         
@@ -468,13 +479,16 @@ class ScanTemplateAPI(BaseAPI):
         
         return self.update(template_id, checks=checks)
     
-    def disable_vulnerability_categories(self, template_id: str,
-                                        categories: List[str]) -> Dict[str, Any]:
+    def disable_vulnerability_categories(
+        self,
+        template_id: str,
+        categories: List[str]
+    ) -> Dict[str, Any]:
         """
         Disable specific vulnerability check categories.
         
-        Deactivates vulnerability checks for specified categories without
-        affecting other check configurations.
+        Deactivates vulnerability checks for specified categories
+        without affecting other check configurations.
         
         Args:
             template_id: The identifier of the scan template
@@ -509,12 +523,15 @@ class ScanTemplateAPI(BaseAPI):
         
         return self.update(template_id, checks=checks)
     
-    def create_discovery_template(self, name: str, 
-                                 description: str = "Network discovery only",
-                                 tcp_ports: Optional[List[int]] = None,
-                                 udp_ports: Optional[List[int]] = None,
-                                 send_icmp: bool = True,
-                                 send_arp: bool = True) -> Dict[str, Any]:
+    def create_discovery_template(
+        self,
+        name: str,
+        description: str = "Network discovery only",
+        tcp_ports: Optional[List[int]] = None,
+        udp_ports: Optional[List[int]] = None,
+        send_icmp: bool = True,
+        send_arp: bool = True
+    ) -> Dict[str, Any]:
         """
         Create a discovery-only scan template.
         
@@ -560,9 +577,11 @@ class ScanTemplateAPI(BaseAPI):
         }
         
         if tcp_ports:
-            discovery_config['service']['tcp']['additionalPorts'] = tcp_ports
+            service_tcp = discovery_config['service']['tcp']  # type: ignore
+            service_tcp['additionalPorts'] = tcp_ports
         if udp_ports:
-            discovery_config['service']['udp']['additionalPorts'] = udp_ports
+            service_udp = discovery_config['service']['udp']  # type: ignore
+            service_udp['additionalPorts'] = udp_ports
         
         return self.create(
             name=name,
