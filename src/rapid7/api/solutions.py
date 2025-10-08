@@ -49,6 +49,18 @@ class SolutionsAPI(BaseAPI):
     
     MAX_PAGE_SIZE = 500
     
+    def _validate_page_size(self, size: int) -> int:
+        """
+        Validate and cap page size to maximum allowed.
+        
+        Args:
+            size: Requested page size
+        
+        Returns:
+            Validated page size (capped at MAX_PAGE_SIZE)
+        """
+        return min(size, self.MAX_PAGE_SIZE)
+    
     def list(
         self,
         page: int = 0,
@@ -58,8 +70,8 @@ class SolutionsAPI(BaseAPI):
         """
         List all remediation solutions.
         
-        Returns a paginated list of all solutions available in the vulnerability
-        database with support for sorting.
+        Returns a paginated list of all solutions available in the
+        vulnerability database with support for sorting.
         
         Args:
             page: Zero-based page index to retrieve (default: 0)
@@ -96,7 +108,7 @@ class SolutionsAPI(BaseAPI):
             ```
         """
         # Validate size parameter
-        size = min(size, self.MAX_PAGE_SIZE)
+        size = self._validate_page_size(size)
         
         params: Dict[str, Any] = {
             'page': page,
@@ -132,7 +144,8 @@ class SolutionsAPI(BaseAPI):
                     - html: HTML-formatted information
                     - text: Plain text information
                 - appliesTo: Description of what it applies to
-                - estimate: Time estimate (ISO 8601 duration, e.g., "PT10M")
+                - estimate: Time estimate (ISO 8601 duration,
+                           e.g., "PT10M")
                 - type: Solution type (configuration, patch, rollup)
                 - links: HATEOAS links
         
@@ -199,7 +212,7 @@ class SolutionsAPI(BaseAPI):
         
         Args:
             solution_id: The unique identifier of the solution
-            rollup_only: If True, return only highest-level "rollup" 
+            rollup_only: If True, return only highest-level "rollup"
                         superseding solutions (default: False)
         
         Returns:
@@ -210,7 +223,9 @@ class SolutionsAPI(BaseAPI):
         Example:
             ```python
             # Get all superseding solutions
-            newer = client.solutions.get_superseding_solutions('old-solution-id')
+            newer = client.solutions.get_superseding_solutions(
+                'old-solution-id'
+            )
             
             # Get only rollup superseding solutions
             rollups = client.solutions.get_superseding_solutions(
@@ -229,7 +244,7 @@ class SolutionsAPI(BaseAPI):
         return self._request(
             'GET',
             f'solutions/{solution_id}/superseding',
-            params=params if params else None
+            params=params
         )
     
     def get_superseded_solutions(
@@ -253,7 +268,9 @@ class SolutionsAPI(BaseAPI):
         Example:
             ```python
             # Get solutions this one supersedes
-            older = client.solutions.get_superseded_solutions('new-solution-id')
+            older = client.solutions.get_superseded_solutions(
+                'new-solution-id'
+            )
             
             for solution in older['resources']:
                 print(f"This replaces: {solution['summary']['text']}")
@@ -332,8 +349,8 @@ class SolutionsAPI(BaseAPI):
         Note: This is a client-side filter.
         
         Args:
-            solution_type: Solution type to filter by
-                          Common types: 'configuration', 'patch', 'rollup'
+            solution_type: Solution type to filter by. Common types:
+                          'configuration', 'patch', 'rollup'
             page: Zero-based page index to retrieve (default: 0)
             size: Number of records per page (default: 500, max: 500)
         
@@ -343,7 +360,9 @@ class SolutionsAPI(BaseAPI):
         Example:
             ```python
             # Get configuration solutions
-            config_solutions = client.solutions.get_by_type('configuration')
+            config_solutions = client.solutions.get_by_type(
+                'configuration'
+            )
             
             # Get patch solutions
             patches = client.solutions.get_by_type('patch')
@@ -353,7 +372,7 @@ class SolutionsAPI(BaseAPI):
             ```
         """
         # Validate size parameter
-        size = min(size, self.MAX_PAGE_SIZE)
+        size = self._validate_page_size(size)
         
         # Get solutions for the requested page
         response = self.list(page=page, size=size)
@@ -390,10 +409,14 @@ class SolutionsAPI(BaseAPI):
         Example:
             ```python
             # Find Ubuntu-related solutions
-            ubuntu_solutions = client.solutions.search_by_applies_to('Ubuntu')
+            ubuntu_solutions = client.solutions.search_by_applies_to(
+                'Ubuntu'
+            )
             
             # Find Windows solutions
-            windows_solutions = client.solutions.search_by_applies_to('Windows')
+            windows_solutions = client.solutions.search_by_applies_to(
+                'Windows'
+            )
             
             for solution in ubuntu_solutions:
                 print(f"- {solution['summary']['text']}")
@@ -401,7 +424,7 @@ class SolutionsAPI(BaseAPI):
             ```
         """
         # Validate size parameter
-        size = min(size, self.MAX_PAGE_SIZE)
+        size = self._validate_page_size(size)
         
         # Get solutions for the requested page
         response = self.list(page=page, size=size)
