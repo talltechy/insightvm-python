@@ -327,17 +327,31 @@ The v2.0 release has been tested against live InsightVM instances:
 - ✅ Context manager support
 - ✅ SSL verification configuration
 
-**Sprint 3: Core Operations (NEW):**
-- ✅ **Scans API** - Complete scan lifecycle management (Issue #66, PR #83)
+**Sprint 3: Core Operations (COMPLETE - 100%):**
+- ✅ **Scans API** - Complete scan lifecycle management (Issue #66, PR #84)
   - Start, stop, pause, resume scans
   - Monitor scan progress and status
   - Site-based and adhoc scanning
   - Scan history and statistics
-- ✅ **Reports API** - Full report management (Issue #67, PR #82)
+- ✅ **Reports API** - Full report management (Issue #67, PR #84)
   - Report configuration CRUD
   - Report generation and monitoring
   - Download report content
   - Template and format discovery
+- ✅ **Scan Engines API** - Engine and pool management (Issue #68, PR #85)
+  - CRUD operations for scan engines
+  - Engine pool management
+  - Health monitoring and load balancing
+  - Site and scan associations
+- ✅ **Scan Templates API** - Template management (Issue #69, PR #86)
+  - Template CRUD operations
+  - Discovery configuration (asset, service, performance)
+  - Service discovery settings
+  - Performance optimization helpers
+- ✅ **Sites API Standardization** (Commit f5980df)
+  - Refactored to follow standardized BaseAPI pattern
+  - Created `SiteManagementTools` utility class for advanced operations
+  - See [SITE_MANAGEMENT.md](docs/SITE_MANAGEMENT.md) for migration guide
 - ✅ **Optimization Patterns**
   - MAX_PAGE_SIZE constants for efficient pagination
   - Enhanced timeout validation
@@ -345,11 +359,12 @@ The v2.0 release has been tested against live InsightVM instances:
 
 **Previously Supported:**
 - ✅ Comprehensive asset and asset group operations
-- ✅ Site management
 - ✅ Sonar query integration
 
 **Breaking Changes:**
-- ⚠️ See [MIGRATION.md](MIGRATION.md) for upgrade guide from v1.0
+- ⚠️ **Sites API Standardization**: Custom helper methods moved to `SiteManagementTools`
+- ⚠️ See [MIGRATION.md](MIGRATION.md) for complete upgrade guide from v1.0
+- ⚠️ See [SITE_MANAGEMENT.md](docs/SITE_MANAGEMENT.md) for Sites API migration details
 
 ### v1.0.0 (Previous)
 - Initial release with basic functionality
@@ -369,11 +384,17 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 ### Current Sprint Progress
 
-**Sprint 3: Core Operations** (High Priority)
-- ✅ Issue #66: Scans API Module (COMPLETE - PR #83)
-- ✅ Issue #67: Reports API Module (COMPLETE - PR #82)
-- ⏳ Issue #68: Scan Engines API Module (NEXT)
-- ⏳ Issue #69: Scan Templates API Module
+**Sprint 3: Core Operations** ✅ COMPLETE (100%)
+- ✅ Issue #66: Scans API Module (COMPLETE - PR #84)
+- ✅ Issue #67: Reports API Module (COMPLETE - PR #84)
+- ✅ Issue #68: Scan Engines API Module (COMPLETE - PR #85)
+- ✅ Issue #69: Scan Templates API Module (COMPLETE - PR #86)
+- ✅ Sites API Standardization (COMPLETE - Commit f5980df)
+
+**Sprint 4: Vulnerabilities & Remediation** (NEXT - High Priority)
+- ⏳ Issue #70: Vulnerabilities API Module
+- ⏳ Issue #71: Solutions API Module
+- ⏳ Issue #72: Vulnerability Exceptions API Module
 
 ## 📖 API References
 

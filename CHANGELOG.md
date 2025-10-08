@@ -90,6 +90,29 @@ This is a **major breaking release** with significant improvements to the codeba
   - Old: Custom names like `ivm_username`
   - New: Standardized `INSIGHTVM_API_USERNAME`
 
+- 🔥 **BREAKING**: Sites API Standardization
+  - Refactored Sites API to follow standardized BaseAPI pattern
+  - **Removed custom helper methods from SiteAPI class**:
+    - `get_all_sites()`, `filter_by_name_pattern()`, `filter_empty_sites()`
+    - `filter_by_ids()`, `mass_delete()`, `delete_by_pattern()`, `get_asset_count()`
+  - **Renamed methods to avoid BaseAPI conflicts**:
+    - `get()` → `get_site()`
+    - `delete()` → `delete_site()`
+  - **Added standard CRUD operations** matching scan_engines and scan_templates patterns:
+    - `list()`, `get_site()`, `create()`, `update()`, `delete_site()`
+  - **Added new resource access methods**:
+    - `get_assets()`, `get_scan_engine()`, `get_scan_template()`
+    - `set_scan_engine()`, `set_scan_template()`
+    - `get_scans()`, `start_scan()`
+    - `get_included_targets()`, `set_included_targets()`
+    - `get_excluded_targets()`, `set_excluded_targets()`
+  - **Created `src/rapid7/tools/site_management.py`**:
+    - New `SiteManagementTools` utility class
+    - Preserves all custom helper functionality removed from core API
+    - Methods: `get_all_sites()`, `filter_by_name_pattern()`, `filter_empty_sites()`, `filter_by_ids()`, `mass_delete()`, `delete_by_pattern()`, `get_asset_count()`
+  - **Migration**: See `docs/SITE_MANAGEMENT.md` for complete migration guide
+  - **Commit**: f5980df
+
 #### Improvements
 - ⚡ Simplified authentication (1 line vs 8+ lines)
 - ⚡ Consistent API patterns across all modules
