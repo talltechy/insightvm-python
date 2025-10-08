@@ -18,6 +18,7 @@ from .api.sites import SiteAPI
 from .api.sonar_queries import SonarQueryAPI
 from .api.solutions import SolutionsAPI
 from .api.vulnerabilities import VulnerabilitiesAPI
+from .api.vulnerability_exceptions import VulnerabilityExceptionsAPI
 
 
 class InsightVMClient:
@@ -39,6 +40,8 @@ class InsightVMClient:
         reports (ReportsAPI): Report operations client
         vulnerabilities (VulnerabilitiesAPI): Vulnerability operations client
         solutions (SolutionsAPI): Solution operations client
+        vulnerability_exceptions (VulnerabilityExceptionsAPI): Vulnerability
+            exception operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -142,6 +145,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.solutions = SolutionsAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.vulnerability_exceptions = VulnerabilityExceptionsAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     
