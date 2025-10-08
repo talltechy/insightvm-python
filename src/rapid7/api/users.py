@@ -200,7 +200,14 @@ class UserAPI(BaseAPI):
             if locale_reports:
                 data['locale']['reports'] = locale_reports
         
-        # Add any additional properties
+        # Validate and add any additional properties
+        # Prevent overwriting critical fields
+        protected_keys = {'login', 'name', 'enabled', 'authentication',
+                          'role', 'passwordResetOnLogin'}
+        for key in kwargs:
+            if key in protected_keys:
+                raise ValueError(
+                    f"Cannot override protected field '{key}' via kwargs")
         data.update(kwargs)
         
         return self._request('POST', 'users', json=data)
