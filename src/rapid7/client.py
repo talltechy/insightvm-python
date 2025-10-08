@@ -16,6 +16,7 @@ from .api.scan_engines import ScanEngineAPI
 from .api.scan_templates import ScanTemplateAPI
 from .api.sites import SiteAPI
 from .api.sonar_queries import SonarQueryAPI
+from .api.vulnerabilities import VulnerabilitiesAPI
 
 
 class InsightVMClient:
@@ -35,6 +36,7 @@ class InsightVMClient:
         scan_engines (ScanEngineAPI): Scan engine operations client
         scan_templates (ScanTemplateAPI): Scan template operations client
         reports (ReportsAPI): Report operations client
+        vulnerabilities (VulnerabilitiesAPI): Vulnerability operations client
     
     Example:
         >>> # Basic usage with environment variables
@@ -132,6 +134,9 @@ class InsightVMClient:
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
         self.reports = ReportsAPI(
+            self.auth, verify_ssl=verify_ssl, timeout=timeout
+        )
+        self.vulnerabilities = VulnerabilitiesAPI(
             self.auth, verify_ssl=verify_ssl, timeout=timeout
         )
     
