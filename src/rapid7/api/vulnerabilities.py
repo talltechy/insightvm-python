@@ -579,7 +579,7 @@ class VulnerabilitiesAPI(BaseAPI):
         vulns = response.get('resources', [])
         exploitable = [
             v for v in vulns
-            if v.get('exploits') not in [None, '', 0]
+            if v.get('exploits')
         ]
         
         return exploitable
@@ -626,7 +626,7 @@ class VulnerabilitiesAPI(BaseAPI):
         vulns = response.get('resources', [])
         with_malware = [
             v for v in vulns
-            if v.get('malwareKits') not in [None, '', 0]
+            if v.get('malwareKits')
         ]
         
         return with_malware
