@@ -236,6 +236,11 @@ class UserAPI(BaseAPI):
             >>> # Disable user account
             >>> client.users.update(user_id=42, enabled=False)
         """
+        # Normalize snake_case keys to camelCase for API
+        if 'password_reset_on_login' in kwargs:
+            kwargs['passwordResetOnLogin'] = kwargs.pop(
+                'password_reset_on_login')
+        
         return self._request('PUT', f'users/{user_id}', json=kwargs)
 
     def delete_user(self, user_id: int) -> Dict[str, Any]:
@@ -299,9 +304,8 @@ class UserAPI(BaseAPI):
             >>> client.users.set_sites(user_id=42, site_ids=[])
         """
         # API expects JSON array of site IDs
-        return self._request(
-            'PUT', f'users/{user_id}/sites',
-            json={'ids': site_ids})
+        return self._request('PUT', f'users/{user_id}/sites',
+                             json={'ids': site_ids})
 
     def grant_site_access(self, user_id: int,
                           site_id: int) -> Dict[str, Any]:
@@ -408,9 +412,8 @@ class UserAPI(BaseAPI):
             ...     user_id=42, asset_group_ids=[])
         """
         # API expects JSON array of asset group IDs
-        return self._request(
-            'PUT', f'users/{user_id}/asset_groups',
-            json={'ids': asset_group_ids})
+        return self._request('PUT', f'users/{user_id}/asset_groups',
+                             json={'ids': asset_group_ids})
 
     def grant_asset_group_access(self, user_id: int,
                                   asset_group_id: int) -> Dict[str, Any]:
@@ -431,8 +434,8 @@ class UserAPI(BaseAPI):
             >>> client.users.grant_asset_group_access(
             ...     user_id=42, asset_group_id=5)
         """
-        return self._request(
-            'PUT', f'users/{user_id}/asset_groups/{asset_group_id}')
+        endpoint = f'users/{user_id}/asset_groups/{asset_group_id}'
+        return self._request('PUT', endpoint)
 
     def revoke_asset_group_access(self, user_id: int,
                                    asset_group_id: int) -> Dict[str, Any]:
@@ -730,10 +733,8 @@ class UserAPI(BaseAPI):
             ...     'user', users=all_users)
         """
         all_users = users if users is not None else self.get_all()
-        return [
-            user for user in all_users
-            if user.get('role', {}).get('id', '') == role_id
-        ]
+        return [user for user in all_users
+                if user.get('role', {}).get('id', '') == role_id]
 
     def create_admin(self, 
                      login: str,
