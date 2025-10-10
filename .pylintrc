@@ -45,7 +45,7 @@ max-line-length=100
 max-module-lines=1000
 
 # String used as indentation unit
-indent-string='    '
+indent-string="    "
 
 [BASIC]
 # Good variable names which should always be accepted

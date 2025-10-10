@@ -25,7 +25,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements.txt ]; then
+          echo "requirements.txt found. Installing dependencies..."
+          pip install -r requirements.txt
+        else
+          echo "requirements.txt not found. Skipping dependency installation."
+        fi
     
     - name: Analysing the code with pylint
       run: |
