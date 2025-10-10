@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "insightvm-python"
 version = "2.0.0"
 description = "Python library for rapid7 insightvm and palo alto cortex xdr apis"
-authors = [{name = "Your Name"}]
+authors = [{name = "Matt Wyen", email = "matt@mattwyen.me"}]
 requires-python = ">=3.8"
 dependencies = [
     "requests>=2.31.0",
