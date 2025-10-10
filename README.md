@@ -1,5 +1,7 @@
 # InsightVM-Python
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2b14cef0982343e0b00fad6b128b086f)](https://app.codacy.com/gh/talltechy/insightvm-python?utm_source=github.com&utm_medium=referral&utm_content=talltechy/insightvm-python&utm_campaign=Badge_Grade)
+
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
