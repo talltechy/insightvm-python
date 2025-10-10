@@ -324,6 +324,21 @@ pytest -v
 pytest --cov=src --cov-report=html && open htmlcov/index.html
 ```
 
+### Docker Testing (Optional)
+
+For testing in an environment matching CI/CD:
+
+```bash
+# Build and run tests in Docker
+./.docker-test.sh
+
+# Or manually:
+docker build -f Dockerfile.test -t insightvm-test:local .
+docker run --rm insightvm-test:local
+```
+
+This provides a consistent testing environment that matches the GitHub Actions workflow.
+
 ### Test Coverage
 
 This project includes automated test coverage reporting with Codacy integration:
