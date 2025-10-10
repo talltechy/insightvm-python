@@ -35,7 +35,6 @@ jobs:
 
     - name: Upload coverage to Codacy
       if: matrix.python-version == '3.11'  # Only upload once
-      uses: codacy/codacy-coverage-reporter-action@v1
-      with:
-        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: coverage.xml
+      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
+      env:
+        CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
