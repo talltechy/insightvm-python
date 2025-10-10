@@ -2,11 +2,17 @@
 # Edit at https://www.gitignore.io/?templates=git,gpg,test,linux,macos,python,backup,windows,database,virtualenv,compressed,libreoffice,spreadsheet,compression,visualstudio,microsoftoffice,visualstudiocode,compressedarchive
 
 ## CUSTOM ###
+# Codacy CLI tools
+.codacy/
+
 # ini
 /config/
 config/ini/*
 config/*
-test/*
+# Temporary test files (not the tests/ directory)
+test_*.local
+test_*.tmp
+*.test.tmp
 memory-bank/*
 /memory-bank/
 # Pycharm
@@ -742,3 +748,6 @@ working_environment/share/python-wheels/
 variables.py
 insightvm-python.code-workspace
 
+# Explicitly include tests directory (must be at end to override patterns above)
+!tests/
+!tests/**
