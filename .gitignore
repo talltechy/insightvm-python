@@ -9,7 +9,10 @@
 /config/
 config/ini/*
 config/*
-test/*
+# Temporary test files (not the tests/ directory)
+test_*.local
+test_*.tmp
+*.test.tmp
 memory-bank/*
 /memory-bank/
 # Pycharm
@@ -744,3 +747,7 @@ working_envrionment/*
 working_environment/share/python-wheels/
 variables.py
 insightvm-python.code-workspace
+
+# Explicitly include tests directory (must be at end to override patterns above)
+!tests/
+!tests/**
