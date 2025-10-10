@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8676b480eff04517b65bc3bfcfeaea9a)](https://app.codacy.com/gh/talltechy/insightvm-python/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 A modern Python client library for Rapid7 InsightVM and Palo Alto Cortex XDR APIs. Built with industry-standard patterns, comprehensive type hints, and a clean, intuitive interface.
 
