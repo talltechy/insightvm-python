@@ -1,0 +1,16 @@
+# Dockerfile for local testing
+# Matches CI/CD environment for consistent test execution
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
+
+# Run tests with coverage
+CMD ["pytest", "--cov=src", "--cov-report=xml", "--cov-report=term-missing", "-v"]
