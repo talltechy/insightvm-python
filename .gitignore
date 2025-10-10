@@ -2,6 +2,9 @@
 # Edit at https://www.gitignore.io/?templates=git,gpg,test,linux,macos,python,backup,windows,database,virtualenv,compressed,libreoffice,spreadsheet,compression,visualstudio,microsoftoffice,visualstudiocode,compressedarchive
 
 ## CUSTOM ###
+# Codacy CLI tools
+.codacy/
+
 # ini
 /config/
 config/ini/*
@@ -741,4 +744,3 @@ working_envrionment/*
 working_environment/share/python-wheels/
 variables.py
 insightvm-python.code-workspace
-

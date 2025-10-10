@@ -300,6 +300,57 @@ See [SECURITY.md](SECURITY.md) for complete security policy and vulnerability re
 
 ## 🧪 Testing
 
+### Running Tests
+
+```bash
+# Install test dependencies (included in requirements.txt)
+pip install -r requirements.txt
+
+# Run all tests
+pytest
+
+# Run with coverage report (local)
+pytest --cov=src --cov-report=html
+
+# Run specific test files
+pytest tests/test_auth.py
+pytest tests/test_client.py
+pytest tests/test_rapid7/
+
+# Run tests in verbose mode
+pytest -v
+
+# Run tests with coverage and open HTML report
+pytest --cov=src --cov-report=html && open htmlcov/index.html
+```
+
+### Test Coverage
+
+This project includes automated test coverage reporting with Codacy integration:
+
+- **CI/CD Coverage**: Tests run automatically on push and PR to `main`/`develop`
+- **Coverage Reporting**: Uploaded to Codacy dashboard in real-time
+- **Multi-Python Support**: Tested across Python 3.8-3.12
+- **Coverage Format**: Cobertura XML for Codacy compatibility
+
+**Current Coverage Targets**: 30-40% baseline with room for expansion
+
+### Test Structure
+
+```
+tests/
+├── __init__.py
+├── conftest.py                 # Shared fixtures and utilities
+├── test_auth.py                # Authentication module tests
+├── test_client.py              # Client initialization tests
+└── test_rapid7/                # Rapid7 API module tests
+    ├── __init__.py
+    ├── test_base.py           # Base API functionality
+    └── test_assets.py         # Assets API examples
+```
+
+### Manual Testing
+
 The v2.0 release has been tested against live InsightVM instances:
 - ✅ Authentication with HTTPBasicAuth
 - ✅ Asset retrieval and management (1182+ assets tested)
