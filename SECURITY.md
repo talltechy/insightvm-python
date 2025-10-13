@@ -279,6 +279,42 @@ When using this library in regulated environments:
 - [ ] Incident response plan in place
 - [ ] Regular security reviews scheduled
 
+## Pre-commit & Secret Scanning
+
+This repository supports pre-commit hooks and CI secret scanning to help prevent accidental credential leaks.
+
+Local setup (recommended):
+
+1. Install pre-commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+2. Run pre-commit against all files to validate formatting and static checks:
+
+```bash
+pre-commit run --all-files
+```
+
+3. (Optional) Initialize detect-secrets baseline for your environment and review findings before committing:
+
+```bash
+detect-secrets scan --all-files > .secrets.baseline
+# Review the baseline and remove false positives, do not include real secrets
+```
+
+CI scanning:
+
+- This project includes `.github/workflows/secret-scan.yml` which runs `detect-secrets` (and optionally gitleaks) and uploads findings as artifacts for maintainers to review. The initial workflow is configured to be non-blocking so that maintainers can review existing findings and create a sanitized `.secrets.baseline`.
+- After the baseline is established and reviewed, maintainers can update the workflow to fail on new detections.
+
+Best practices:
+- Never commit `.env` files with real credentials.
+- If a secret is discovered in the repo, rotate the secret immediately and remove the secret from the repository history.
+- Use a secret manager for production systems and CI.
+
 ## Additional Resources
 
 - [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
