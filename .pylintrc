@@ -26,13 +26,11 @@ disable=
     W0212,  # protected-access (sometimes needed for testing)
     W0511,  # fixme (TODO comments are ok during development)
     C0301,  # line-too-long (handled by formatter)
+    W3101,  # missing-timeout (false positive when timeout is set in kwargs)
 
 [REPORTS]
 # Set the output format
 output-format=colorized
-
-# Include message's id in output
-include-ids=yes
 
 # Tells whether to display a full report or only the messages
 reports=no

@@ -42,7 +42,7 @@ class TestInsightVMClient:
         assert hasattr(client, 'asset_groups')
         assert hasattr(client, 'sites')
         assert hasattr(client, 'scans')
-        assert hasattr(client, 'sonavigil_queries')  # Note: typo in actual code
+        assert hasattr(client, 'sonar_queries')
         assert hasattr(client, 'reports')
         assert hasattr(client, 'vulnerabilities')
         assert hasattr(client, 'solutions')
@@ -152,7 +152,7 @@ class TestClientIntegration:
         # (even if they don't make real HTTP calls due to mocking)
         assert hasattr(client.assets, 'list')
         assert hasattr(client.sites, 'create')
-        assert hasattr(client.scans, 'start')
+        assert hasattr(client.scans, 'start_site_scan')
 
     @pytest.mark.slow
     def test_client_lifecycle(self):
