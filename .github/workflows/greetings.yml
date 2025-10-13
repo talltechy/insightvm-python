@@ -1,0 +1,46 @@
+name: "Welcome — insightvm-python"
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  greet:
+    name: Greet first-time contributors
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Post welcome message for issues & PRs
+        uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            Hi @${{ github.actor }} 👋
+
+            Thanks for opening an issue against the insightvm-python client.
+
+            To help us triage it quickly, please:
+            - Use the issue templates when appropriate.
+            - Include a short description, steps to reproduce, and the expected vs actual behavior.
+            - Provide the Python version and the version of the package you are using.
+            - Attach logs or a minimal reproduction when possible.
+
+            For security-sensitive reports, see SECURITY.md. See also CONTRIBUTING.md and README.md.
+          pr-message: |
+            Hi @${{ github.actor }} 👋
+
+            Thanks for your first pull request to insightvm-python! We appreciate your contribution.
+
+            A few quick reminders to help speed up review:
+            - Follow the contribution guide: CONTRIBUTING.md
+            - Add or update tests under the `tests/` directory and run them with `pytest`.
+            - Run formatting and linters (pre-commit / black / isort / flake8) locally before pushing.
+            - Update `CHANGELOG.md` if the change affects public behaviour or user-facing APIs.
+            - Describe the purpose of the change and the steps you followed to verify it.
+
+            A maintainer will review this soon — thank you!
