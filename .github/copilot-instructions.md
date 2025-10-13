@@ -10,6 +10,16 @@ InsightVM-Python is a modern Python client library for Rapid7 InsightVM and Palo
 **Python Support:** 3.8+  
 **Architecture:** BaseAPI inheritance pattern with unified client interface
 
+## Context Sources
+
+The repository integrates an external MCP knowledge source called "Context7" for up-to-date Rapid7 InsightVM API information. When generating, updating, or reviewing code that interacts with the InsightVM API, prefer Context7 as the primary reference for:
+- Endpoint paths and HTTP methods
+- Request and response payload shapes and fields
+- Supported query parameters, filters, and operators
+- Example requests, responses, and usage patterns
+
+Context7 MCP reference: `/riza/rapid7-insightvm-api-docs` (high-coverage snippets and a high trust score). Always validate generated code against the local `docs/` files and, where possible, test against a live InsightVM instance.
+
 ## Project Structure
 
 ```
