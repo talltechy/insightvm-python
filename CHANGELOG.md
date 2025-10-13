@@ -5,6 +5,14 @@ All notable changes to InsightVM-Python will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+- 🔥 **BREAKING**: Removed Palo Alto Cortex XDR integration from main codebase
+  - Moved to dedicated development branch for independent development
+  - Main repository now focuses exclusively on Rapid7 InsightVM functionality
+  - Palo Alto XDR code available in git history (commit 559a63e and earlier)
+
 ## [2.0.0] - 2025-10-07
 
 ### 🎉 Major Release - Complete Architecture Refactoring
@@ -166,7 +174,6 @@ This is a **major breaking release** with significant improvements to the codeba
 - Asset retrieval capabilities
 - Asset group creation
 - Database storage support (PostgreSQL)
-- Palo Alto Cortex XDR integration
 - Agent installation tools
 - Manual Base64 authentication
 

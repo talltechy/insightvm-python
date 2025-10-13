@@ -17,9 +17,6 @@ MOCK_ENV_VARS = {
     "INSIGHTVM_VERIFY_SSL": "true",
     "INSIGHT_PLATFORM_API_KEY": "test_platform_key",
     "INSIGHT_PLATFORM_BASE_URL": "https://us.api.insight.rapid7.com",
-    "XDR_API_KEY": "test_xdr_key",
-    "XDR_API_KEY_ID": "test_xdr_key_id",
-    "XDR_BASE_URL": "https://api-test.xdr.us.paloaltonetworks.com",
 }
 
 
