@@ -4,7 +4,7 @@ This document provides guidance for GitHub Copilot when working with the Insight
 
 ## Project Overview
 
-InsightVM-Python is a modern Python client library for Rapid7 InsightVM and Palo Alto Cortex XDR APIs. The project follows industry-standard patterns with comprehensive type hints and clean, intuitive interfaces.
+InsightVM-Python is a modern Python client library for Rapid7 InsightVM API. The project follows industry-standard patterns with comprehensive type hints and clean, intuitive interfaces.
 
 **Version:** 2.0.0  
 **Python Support:** 3.8+  
@@ -42,7 +42,6 @@ insightvm-python/
 │   │   ├── scan_templates.py # Template management
 │   │   └── sonar_queries.py # Sonar integration
 │   └── tools/             # Standalone utility scripts
-├── src/paloalto/          # Palo Alto Cortex XDR package
 ├── docs/                  # Documentation
 ├── tests/                 # Test suite
 │   ├── conftest.py       # Shared pytest fixtures
