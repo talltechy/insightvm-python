@@ -85,7 +85,7 @@ The InsightVM-Python library implementation is **well-aligned** with the officia
 
 **Status:** ✅ **CORRECT**
 
-**Critical Finding:** The Rapid7 InsightVM API v3 uses **underscores** (_) not hyphens (-) for multi-word endpoint names.
+**Key Verification:** The Rapid7 InsightVM API v3 uses **underscores** (_) not hyphens (-) for multi-word endpoint names.
 
 **Verified Correct Endpoint Names:**
 ```
