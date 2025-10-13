@@ -62,19 +62,61 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
+# Configure environment (SECURE)
 cp .env.example .env
-# Edit .env with credentials
+# Create a local `.env` from `.env.example` for development only. Do NOT commit real credentials.
+# For production or CI, set secrets using the platform's secret manager (GitHub Secrets, AWS Secrets Manager, Azure Key Vault, etc.)
+# Never embed API credentials, tokens, or passwords in code, config files checked into source control, or documentation examples.
 ```
 
-### Required Environment Variables
+### Required Environment Variables (DO NOT HARD-CODE SECRETS)
 
-```bash
-INSIGHTVM_API_USERNAME=your_username
-INSIGHTVM_API_PASSWORD=your_password
-INSIGHTVM_BASE_URL=https://your-console:3780
-INSIGHTVM_VERIFY_SSL=false  # For self-signed certificates
+Provide the following configuration via environment variables or a secret manager. Examples in documentation should show how to reference these variables (e.g. `os.getenv(...)`) but must never include real credential values.
+
+- `INSIGHTVM_API_USERNAME` — InsightVM API username (string); supply via environment or secret manager.
+- `INSIGHTVM_API_PASSWORD` — InsightVM API password (secret); store in a secret manager and reference via env var in CI. Never commit this value.
+- `INSIGHTVM_BASE_URL` — Full console base URL (include scheme and port), e.g. `https://console.example:3780`.
+- `INSIGHTVM_VERIFY_SSL` — Optional boolean; default `true`. Set to `false` only in trusted development/testing environments when using self-signed certificates.
+
+Best practice: Use CI secrets or an external secret manager for production systems and avoid committing `.env` files to the repository.
+
+Secrets Policy (short):
+- Never include actual API keys, passwords, tokens, or private keys in source code, documentation, or examples.
+- When examples require secrets, use placeholders like `<INSIGHTVM_API_PASSWORD>` or show reading from env vars only.
+- Add secret-scanning in CI and pre-commit hooks. Recommended tools: gitleaks, detect-secrets. (Guidance only — do not add secret values here.)
+
+## PR & Commit Checklist (recommended)
+
+Before opening a pull request, ensure:
+
+- No secrets or hardcoded credentials are introduced in the diff.
+- Code formatting and static checks pass (black, flake8, mypy).
+- Tests cover new functionality; tests use mocks/fixtures for external API calls.
+- Documentation and migration notes updated for any public API or behavior changes.
+- Add a short security note in the PR description when changes touch auth, secrets, or SSL handling.
+
+## Examples & Tests (no secrets)
+
+- Example code should demonstrate how to read configuration from environment variables, e.g.:
+
+```python
+import os
+
+username = os.getenv("INSIGHTVM_API_USERNAME")
+password = os.getenv("INSIGHTVM_API_PASSWORD")
+base_url = os.getenv("INSIGHTVM_BASE_URL")
 ```
+
+- Integration or example scripts that require real credentials should never be committed. Tests should use `tests/conftest.py` fixtures and mocked API responses instead of real endpoints.
+
+## API Naming & Compatibility Guidance
+
+- Avoid introducing method names that conflict with `BaseAPI` (for example, do not add `get`, `update`, or `delete` methods to subclasses if those signatures would shadow incompatible parent methods).
+- For the Scan Engines client prefer explicit method names such as `get_engine`, `update_engine`, and `delete_engine` to avoid inheritance conflicts. When renaming public methods, include a deprecation wrapper and add a migration note in `MIGRATION.md` and the module's docs.
+
+## SSL Verification Guidance
+
+- Default `INSIGHTVM_VERIFY_SSL` to `true`. Disabling SSL verification (`false`) is allowed only in trusted development or test environments with self-signed certificates and must be documented. Clearly warn users in docs about the security implications of disabling certificate verification.
 
 ## Coding Standards
 
