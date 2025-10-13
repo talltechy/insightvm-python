@@ -51,7 +51,7 @@ def make_executable(filepath: str) -> None:
     Args:
         filepath: Path to file to make executable
     """
-    os.chmod(filepath, 0o755)
+    os.chmod(os.path.basename(filepath), 0o755)
 
 
 def verify_agent_running() -> bool:
