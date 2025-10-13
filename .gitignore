@@ -752,3 +752,4 @@ insightvm-python.code-workspace
 # Explicitly include tests directory (must be at end to override patterns above)
 !tests/
 !tests/**
+coverage.json
