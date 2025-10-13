@@ -7,8 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- ✨ Testing infrastructure with pytest, Codacy integration, and Docker utilities (PR #93)
+- ✨ GitHub Copilot instructions with Context7 MCP integration (PR #98)
+- ✨ Enhanced GitHub workflows: contributor welcome, CRDA static analysis, Codacy security scan (PR #99)
+- ✨ Improved Pylint workflow configuration (PR #91)
+
+### Changed
+- 🔧 Repository cleanup: removed all __pycache__ files, properly configured .gitignore (PR #98, #101)
+- 🔧 Fixed all GitHub Actions workflow failures (PR #96)
+- 🔧 Improved security scanning with Bandit/CodeQL Action v3 (PR #93)
+- 🔧 Replaced Codacy GitHub Action with official bash script for better security (PR #93)
+
+### Fixed
+- 🐛 **BREAKING**: Scan Engines API method conflicts (PR #95)
+  - Renamed methods to avoid BaseAPI conflicts: `get()` → `get_engine()`, `update()` → `update_engine()`, `delete()` → `delete_engine()`
+  - Added explicit type hints for sort parameters
+  - Fixed status filter in `get_available_engines()` to only include 'active'
+  - Updated all documentation (SCAN_ENGINES_API.md, MIGRATION.md, README.md)
+  - See MIGRATION.md for upgrade instructions
+
 ### Removed
-- 🔥 **BREAKING**: Removed Palo Alto Cortex XDR integration from main codebase
+- 🔥 **BREAKING**: Removed Palo Alto Cortex XDR integration from main codebase (PR #101)
   - Moved to dedicated development branch for independent development
   - Main repository now focuses exclusively on Rapid7 InsightVM functionality
   - Palo Alto XDR code available in git history (commit 559a63e and earlier)
