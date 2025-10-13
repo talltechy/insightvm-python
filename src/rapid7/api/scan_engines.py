@@ -28,7 +28,7 @@ class ScanEngineAPI(BaseAPI):
         >>> engines = client.scan_engines.list()
         >>> 
         >>> # Get specific engine details
-        >>> engine = client.scan_engines.get(engine_id=6)
+        >>> engine = client.scan_engines.get_engine(engine_id=6)
         >>> 
         >>> # Create engine pool
         >>> pool = client.scan_engines.create_pool(
@@ -77,7 +77,7 @@ class ScanEngineAPI(BaseAPI):
         """
         return self._request('GET', 'scan_engines', params=params)
     
-    def get(self, engine_id: int) -> Dict[str, Any]:
+    def get_engine(self, engine_id: int) -> Dict[str, Any]:
         """
         Get details for a specific scan engine.
         
@@ -97,13 +97,13 @@ class ScanEngineAPI(BaseAPI):
                 - links: Hypermedia links
         
         Example:
-            >>> engine = client.scan_engines.get(6)
+            >>> engine = client.scan_engines.get_engine(6)
             >>> print(f"Engine: {engine['name']} ({engine['address']})")
             >>> print(f"Status: {engine['status']}")
         """
         return self._request('GET', f'scan_engines/{engine_id}')
     
-    def update(self, engine_id: int, **kwargs) -> Dict[str, Any]:
+    def update_engine(self, engine_id: int, **kwargs) -> Dict[str, Any]:
         """
         Update configuration for an existing scan engine.
         
@@ -115,14 +115,14 @@ class ScanEngineAPI(BaseAPI):
             Dictionary containing update confirmation and links
         
         Example:
-            >>> result = client.scan_engines.update(
+            >>> result = client.scan_engines.update_engine(
             ...     engine_id=6,
             ...     name="Updated Engine Name"
             ... )
         """
         return self._request('PUT', f'scan_engines/{engine_id}', json=kwargs)
     
-    def delete(self, engine_id: int) -> Dict[str, Any]:
+    def delete_engine(self, engine_id: int) -> Dict[str, Any]:
         """
         Delete a scan engine.
         
@@ -136,14 +136,19 @@ class ScanEngineAPI(BaseAPI):
             Dictionary containing deletion confirmation and links
         
         Example:
-            >>> result = client.scan_engines.delete(6)
+            >>> result = client.scan_engines.delete_engine(6)
         """
         return self._request('DELETE', f'scan_engines/{engine_id}')
     
     # ==================== Scan Engine Sites ====================
     
-    def get_sites(self, engine_id: int, page: int = 0, size: int = 10, 
-                  sort: Optional[List[str]] = None) -> Dict[str, Any]:
+    def get_sites(
+        self,
+        engine_id: int,
+        page: int = 0,
+        size: int = 10,
+        sort: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         Get the list of sites assigned to a scan engine.
         
@@ -160,16 +165,29 @@ class ScanEngineAPI(BaseAPI):
                 - links: Hypermedia links
         
         Example:
-            >>> sites = client.scan_engines.get_sites(engine_id=6, size=50)
-            >>> print(f"Engine assigned to {len(sites['resources'])} sites")
+            >>> sites = client.scan_engines.get_sites(
+            ...     engine_id=6,
+            ...     size=50
+            ... )
+            >>> count = len(sites['resources'])
+            >>> print(f"Engine assigned to {count} sites")
         """
-        params = {'page': page, 'size': size}
+        params: Dict[str, Any] = {'page': page, 'size': size}
         if sort:
             params['sort'] = sort
-        return self._request('GET', f'scan_engines/{engine_id}/sites', params=params)
+        return self._request(
+            'GET',
+            f'scan_engines/{engine_id}/sites',
+            params=params
+        )
     
-    def get_scans(self, engine_id: int, page: int = 0, size: int = 10,
-                  sort: Optional[List[str]] = None) -> Dict[str, Any]:
+    def get_scans(
+        self,
+        engine_id: int,
+        page: int = 0,
+        size: int = 10,
+        sort: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         Get scans that have been executed on a scan engine.
         
@@ -190,10 +208,14 @@ class ScanEngineAPI(BaseAPI):
             >>> for scan in scans['resources']:
             ...     print(f"Scan {scan['id']}: {scan['status']}")
         """
-        params = {'page': page, 'size': size}
+        params: Dict[str, Any] = {'page': page, 'size': size}
         if sort:
             params['sort'] = sort
-        return self._request('GET', f'scan_engines/{engine_id}/scans', params=params)
+        return self._request(
+            'GET',
+            f'scan_engines/{engine_id}/scans',
+            params=params
+        )
     
     # ==================== Engine Pool Operations ====================
     
@@ -215,7 +237,8 @@ class ScanEngineAPI(BaseAPI):
         Example:
             >>> pools = client.scan_engines.list_pools()
             >>> for pool in pools['resources']:
-            ...     print(f"{pool['name']}: {len(pool['engines'])} engines")
+            ...     n = len(pool['engines'])
+            ...     print(f"{pool['name']}: {n} engines")
         """
         return self._request('GET', 'scan_engine_pools', params=params)
     
@@ -241,8 +264,12 @@ class ScanEngineAPI(BaseAPI):
         """
         return self._request('GET', f'scan_engine_pools/{pool_id}')
     
-    def create_pool(self, name: str, engine_ids: Optional[List[int]] = None,
-                    **kwargs) -> Dict[str, Any]:
+    def create_pool(
+        self,
+        name: str,
+        engine_ids: Optional[List[int]] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
         """
         Create a new engine pool.
         
@@ -323,7 +350,11 @@ class ScanEngineAPI(BaseAPI):
         """
         return self._request('GET', f'scan_engine_pools/{pool_id}/engines')
     
-    def set_pool_engines(self, pool_id: int, engine_ids: List[int]) -> Dict[str, Any]:
+    def set_pool_engines(
+        self,
+        pool_id: int,
+        engine_ids: List[int]
+    ) -> Dict[str, Any]:
         """
         Set the engines in an engine pool.
         
@@ -343,8 +374,13 @@ class ScanEngineAPI(BaseAPI):
             ...     engine_ids=[1, 2, 3, 4]
             ... )
         """
-        return self._request('PUT', f'scan_engine_pools/{pool_id}/engines', 
-                           json=engine_ids)
+        # The API expects a list directly, not wrapped in a dict
+        # We need to pass it as JSON body despite type hint mismatch
+        return self._request(
+            'PUT',
+            f'scan_engine_pools/{pool_id}/engines',
+            json=engine_ids  # type: ignore[arg-type]
+        )
     
     def get_engine_pools(self, engine_id: int) -> Dict[str, Any]:
         """
@@ -363,7 +399,10 @@ class ScanEngineAPI(BaseAPI):
             >>> for pool in pools['resources']:
             ...     print(f"Engine in pool: {pool['name']}")
         """
-        return self._request('GET', f'scan_engines/{engine_id}/scan_engine_pools')
+        return self._request(
+            'GET',
+            f'scan_engines/{engine_id}/scan_engine_pools'
+        )
     
     # ==================== Shared Secret Operations ====================
     
@@ -390,10 +429,11 @@ class ScanEngineAPI(BaseAPI):
         Get list of all available (active) scan engines.
         
         Helper method that filters engines by status to return only
-        those currently available for scanning.
+        those currently available for scanning. InsightVM engine status
+        values are typically 'active', 'inactive', or 'unknown'.
         
         Returns:
-            List of available scan engine objects
+            List of available scan engine objects with status 'active'
         
         Example:
             >>> engines = client.scan_engines.get_available_engines()
@@ -401,8 +441,8 @@ class ScanEngineAPI(BaseAPI):
         """
         response = self.list()
         engines = response.get('resources', [])
-        # Only include engines with explicit 'active' or 'running' status
-        return [e for e in engines if e.get('status', '').lower() in ['active', 'running']]
+        # Only include engines with 'active' status
+        return [e for e in engines if e.get('status', '').lower() == 'active']
     
     def get_engine_summary(self, engine_id: int) -> Dict[str, Any]:
         """
@@ -426,7 +466,7 @@ class ScanEngineAPI(BaseAPI):
             >>> print(f"Sites: {summary['sites_count']}")
             >>> print(f"Pools: {len(summary['pools'])}")
         """
-        engine = self.get(engine_id)
+        engine = self.get_engine(engine_id)
         sites = self.get_sites(engine_id, size=1)
         pools = self.get_engine_pools(engine_id)
         
@@ -436,7 +476,11 @@ class ScanEngineAPI(BaseAPI):
             'pools': pools.get('resources', [])
         }
     
-    def assign_engine_to_pool(self, engine_id: int, pool_id: int) -> Dict[str, Any]:
+    def assign_engine_to_pool(
+        self,
+        engine_id: int,
+        pool_id: int
+    ) -> Dict[str, Any]:
         """
         Assign a scan engine to an engine pool.
         
@@ -466,7 +510,11 @@ class ScanEngineAPI(BaseAPI):
         # Update pool with new engine list
         return self.set_pool_engines(pool_id, current_engines)
     
-    def remove_engine_from_pool(self, engine_id: int, pool_id: int) -> Dict[str, Any]:
+    def remove_engine_from_pool(
+        self,
+        engine_id: int,
+        pool_id: int
+    ) -> Dict[str, Any]:
         """
         Remove a scan engine from an engine pool.
         

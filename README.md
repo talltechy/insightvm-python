@@ -429,6 +429,10 @@ The v2.0 release has been tested against live InsightVM instances:
 - ✅ Sonar query integration
 
 **Breaking Changes:**
+- ⚠️ **Scan Engines API Method Renames** (v2.0.x): Three methods renamed to avoid BaseAPI conflicts
+  - `get(engine_id)` → `get_engine(engine_id)`
+  - `update(engine_id)` → `update_engine(engine_id)`
+  - `delete(engine_id)` → `delete_engine(engine_id)`
 - ⚠️ **Sites API Standardization**: Custom helper methods moved to `SiteManagementTools`
 - ⚠️ See [MIGRATION.md](MIGRATION.md) for complete upgrade guide from v1.0
 - ⚠️ See [SITE_MANAGEMENT.md](docs/SITE_MANAGEMENT.md) for Sites API migration details

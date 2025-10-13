@@ -18,7 +18,7 @@ for engine in engines['resources']:
     print(f"{engine['name']}: {engine['status']}")
 
 # Get specific engine details
-engine = client.scan_engines.get(engine_id=6)
+engine = client.scan_engines.get_engine(engine_id=6)
 print(f"Engine: {engine['name']} at {engine['address']}")
 
 # Create an engine pool
@@ -56,7 +56,7 @@ for engine in engines['resources']:
 Retrieve detailed information for a specific scan engine:
 
 ```python
-engine = client.scan_engines.get(engine_id=6)
+engine = client.scan_engines.get_engine(engine_id=6)
 
 print(f"Engine Name: {engine['name']}")
 print(f"Address: {engine['address']}:{engine['port']}")
@@ -69,7 +69,7 @@ print(f"Assigned to {len(engine['sites'])} sites")
 Update scan engine configuration:
 
 ```python
-result = client.scan_engines.update(
+result = client.scan_engines.update_engine(
     engine_id=6,
     name="Updated Engine Name"
 )
@@ -81,7 +81,7 @@ Remove a scan engine from the system:
 
 ```python
 # Engine must not be actively scanning or assigned to sites
-result = client.scan_engines.delete(engine_id=6)
+result = client.scan_engines.delete_engine(engine_id=6)
 ```
 
 ## Engine Site Operations
@@ -370,7 +370,7 @@ Handle common error scenarios:
 from requests.exceptions import HTTPError
 
 try:
-    engine = client.scan_engines.get(engine_id=999)
+    engine = client.scan_engines.get_engine(engine_id=999)
 except HTTPError as e:
     if e.response.status_code == 404:
         print("Engine not found")
@@ -428,9 +428,9 @@ except HTTPError as e:
 
 ### Scan Engine Operations
 - `list(**params)` - List all scan engines
-- `get(engine_id)` - Get engine details
-- `update(engine_id, **kwargs)` - Update engine
-- `delete(engine_id)` - Delete engine
+- `get_engine(engine_id)` - Get engine details
+- `update_engine(engine_id, **kwargs)` - Update engine
+- `delete_engine(engine_id)` - Delete engine
 - `get_sites(engine_id, page, size, sort)` - Get assigned sites
 - `get_scans(engine_id, page, size, sort)` - Get executed scans
 
