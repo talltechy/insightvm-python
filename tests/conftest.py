@@ -49,6 +49,36 @@ def mock_requests_session():
 
 
 @pytest.fixture
+def client():
+    """
+    Create a mock InsightVMClient for testing.
+
+    Returns a client with mocked API calls to avoid real network requests.
+    """
+    from rapid7.client import InsightVMClient
+
+    with patch('requests.request') as mock_request:
+        # Create mock response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "resources": [],
+            "page": {
+                "number": 0,
+                "size": 10,
+                "totalResources": 0,
+                "totalPages": 0
+            }
+        }
+        mock_response.headers = {"Content-Type": "application/json"}
+        mock_request.return_value = mock_response
+
+        # Create client using environment variables from mock_environment_variables
+        client = InsightVMClient()
+        yield client
+
+
+@pytest.fixture
 def mock_api_response():
     """
     Mock API response object for testing.
@@ -74,6 +104,36 @@ def mock_auth_headers():
         "Content-Type": "application/json",
         "X-Api-Key": "test_platform_key",
     }
+
+
+@pytest.fixture
+def mock_auth():
+    """
+    Mock InsightVMAuth for testing.
+
+    Returns a mock auth object for API authentication.
+    """
+    from rapid7.auth import InsightVMAuth
+
+    auth = InsightVMAuth(
+        username="test_user",
+        password="test_pass",
+        base_url="https://test.insightvm.example.com:3780"
+    )
+    return auth
+
+
+@pytest.fixture
+def api_client(mock_auth):
+    """
+    Create a BaseAPI client for testing.
+
+    Returns a BaseAPI instance with mocked authentication.
+    """
+    from rapid7.api.base import BaseAPI
+
+    client = BaseAPI(mock_auth)
+    return client
 
 
 @pytest.fixture
