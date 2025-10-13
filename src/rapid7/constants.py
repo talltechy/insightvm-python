@@ -13,7 +13,7 @@ API_BASE_PATH = f"/api/{API_VERSION}"
 # API Endpoints
 class Endpoints:
     """API endpoint paths for InsightVM API v3."""
-    
+
     ASSET_GROUP = "asset-group"
     ASSET = "asset"
     AUTHENTICATION = "authentication"
@@ -42,7 +42,7 @@ class Endpoints:
 # HTTP Status Codes
 class StatusCodes:
     """Standard HTTP status codes."""
-    
+
     OK = 200
     CREATED = 201
     NO_CONTENT = 204

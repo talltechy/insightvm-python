@@ -42,7 +42,7 @@ class ReportsAPI(BaseAPI):
         All attributes inherited from BaseAPI including auth,
         base_url, verify_ssl, and timeout.
     """
-    
+
     MAX_PAGE_SIZE = 500
 
     # Report Configuration Operations
@@ -73,7 +73,7 @@ class ReportsAPI(BaseAPI):
         """
         # Validate size parameter
         size = min(size, self.MAX_PAGE_SIZE)
-        
+
         params: Dict[str, Any] = {'page': page, 'size': size}
         if sort:
             params['sort'] = sort

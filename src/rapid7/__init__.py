@@ -5,13 +5,13 @@ A modern, simplified Python client for Rapid7 InsightVM API.
 
 Usage:
     >>> from src.rapid7 import InsightVMClient
-    >>> 
+    >>>
     >>> # Create client (uses environment variables)
     >>> client = InsightVMClient()
-    >>> 
+    >>>
     >>> # List assets
     >>> assets = client.assets.list()
-    >>> 
+    >>>
     >>> # Create asset group
     >>> group = client.asset_groups.create_high_risk()
 

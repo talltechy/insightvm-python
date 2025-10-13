@@ -31,23 +31,23 @@ from src.rapid7.ui import create_ui  # noqa: E402
 def find_installer_files(directory: Optional[str] = None) -> list:
     """
     Find Insight Agent installer files.
-    
+
     Args:
         directory: Directory to search in (defaults to script directory)
-        
+
     Returns:
         List of installer file paths
     """
     if directory is None:
         directory = os.path.dirname(os.path.abspath(__file__))
-    
+
     return glob.glob(os.path.join(directory, "agent_installer-*.sh"))
 
 
 def make_executable(filepath: str) -> None:
     """
     Make a file executable.
-    
+
     Args:
         filepath: Path to file to make executable
     """
@@ -57,7 +57,7 @@ def make_executable(filepath: str) -> None:
 def verify_agent_running() -> bool:
     """
     Verify if the Insight Agent is running.
-    
+
     Returns:
         True if agent is running, False otherwise
     """
@@ -89,12 +89,12 @@ def install_insight_agent(
 ) -> bool:
     """
     Install the Rapid7 Insight Agent.
-    
+
     Args:
         installer_path: Path to the installer script
         token: Installation token
         ui: Optional UI instance for formatted output
-        
+
     Returns:
         True if installation successful, False otherwise
     """
@@ -102,7 +102,7 @@ def install_insight_agent(
         ui.print_header("Installing Rapid7 Insight Agent")
     else:
         print("\n=== Installing Rapid7 Insight Agent ===\n")
-    
+
     # Verify installer exists
     if not os.path.exists(installer_path):
         if ui:
@@ -110,7 +110,7 @@ def install_insight_agent(
         else:
             print(f"ERROR: Installer not found: {installer_path}")
         return False
-    
+
     # Make installer executable
     try:
         make_executable(installer_path)
@@ -124,7 +124,7 @@ def install_insight_agent(
         else:
             print(f"ERROR: Failed to make installer executable: {e}")
         return False
-    
+
     # Run installation
     try:
         if ui:
@@ -135,24 +135,24 @@ def install_insight_agent(
         else:
             print("Running installer with sudo privileges...")
             print("You may be prompted for your sudo password")
-        
+
         result = subprocess.run(
             ["sudo", installer_path, "install_start", "--token", token],
             check=True,
             capture_output=True,
             text=True
         )
-        
+
         if ui:
             ui.print_success("Installation completed successfully!")
         else:
             print("✓ Installation completed successfully!")
-        
+
         # Show output if available
         if result.stdout and ui:
             ui.print_info("Installation output:")
             print(result.stdout)
-        
+
     except subprocess.CalledProcessError as e:
         if ui:
             ui.print_error(f"Installation failed: {e}")
@@ -169,13 +169,13 @@ def install_insight_agent(
         else:
             print(f"ERROR: Unexpected error during installation: {e}")
         return False
-    
+
     # Verify agent is running
     if ui:
         ui.print_info("Verifying agent status...")
     else:
         print("Verifying agent status...")
-    
+
     if verify_agent_running():
         if ui:
             ui.print_success("Agent is running!")
@@ -196,15 +196,15 @@ def interactive_mode() -> None:
     """
     ui = create_ui()
     config = get_config()
-    
+
     ui.print_header("Rapid7 Insight Agent Installer")
-    
+
     # Get tool-specific config
     tool_config = config.get_tool_config('install_insight_agent')
-    
+
     # Find installer files
     ui.print_header("Finding Installer Files")
-    
+
     search_dir = tool_config.get('search_directory')
     if search_dir:
         ui.print_info(f"Searching in: {search_dir}")
@@ -212,7 +212,7 @@ def interactive_mode() -> None:
     else:
         ui.print_info("Searching in current directory")
         installer_files = find_installer_files()
-    
+
     if not installer_files:
         ui.print_warning("No installer files found automatically")
         installer_path = ui.prompt(
@@ -241,10 +241,10 @@ def interactive_mode() -> None:
             ui.print_error("No installer selected. Exiting.")
             return
         installer_path = installer_files[selection]
-    
+
     # Get token
     ui.print_header("Installation Token")
-    
+
     last_token = tool_config.get('last_token')
     if last_token:
         ui.print_info("Previous token found (masked)")
@@ -255,23 +255,23 @@ def interactive_mode() -> None:
             token = ui.prompt("Enter installation token")
     else:
         token = ui.prompt("Enter installation token")
-    
+
     if not token:
         ui.print_error("No token provided. Exiting.")
         return
-    
+
     # Preview and confirm
     ui.print_header("Installation Summary")
     ui.print_info(f"Installer: {installer_path}")
     ui.print_info(f"Token: {'*' * len(token)}")
-    
+
     if not ui.confirm("\nProceed with installation?", default=True):
         ui.print_warning("Installation cancelled")
         return
-    
+
     # Perform installation
     success = install_insight_agent(installer_path, token, ui)
-    
+
     # Save configuration if successful
     if success:
         save_config = ui.confirm(
@@ -301,9 +301,9 @@ def main() -> None:
         '--token',
         help='Installation token'
     )
-    
+
     args = parser.parse_args()
-    
+
     # If arguments provided, run in CLI mode
     if args.installer and args.token:
         ui = create_ui()

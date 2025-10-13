@@ -12,23 +12,23 @@ from .base import BaseAPI
 class AssetGroupAPI(BaseAPI):
     """
     API client for InsightVM asset group operations.
-    
+
     This class provides methods for managing asset groups including
     listing, creating, updating, and deleting groups.
-    
+
     Example:
         >>> from src.rapid7.auth import InsightVMAuth
         >>> from src.rapid7.api.asset_groups import AssetGroupAPI
-        >>> 
+        >>>
         >>> auth = InsightVMAuth()
         >>> groups = AssetGroupAPI(auth)
-        >>> 
+        >>>
         >>> # List all asset groups
         >>> all_groups = groups.list()
-        >>> 
+        >>>
         >>> # Create high-risk asset group
         >>> high_risk = groups.create_high_risk()
-        >>> 
+        >>>
         >>> # Create custom group
         >>> custom = groups.create(
         ...     name="Production Servers",
@@ -43,14 +43,14 @@ class AssetGroupAPI(BaseAPI):
         ...     }
         ... )
     """
-    
+
     def list(self) -> Dict[str, Any]:
         """
         List all asset groups.
-        
+
         Returns:
             Dictionary containing all asset groups
-            
+
         Example:
             >>> groups_list = groups.list()
             >>> for group in groups_list['resources']:
@@ -58,24 +58,24 @@ class AssetGroupAPI(BaseAPI):
         """
         response = self.get('asset_groups')
         return response.json()
-    
+
     def get_group(self, group_id: int) -> Dict[str, Any]:
         """
         Get a specific asset group by ID.
-        
+
         Args:
             group_id: The asset group ID
-        
+
         Returns:
             Dictionary containing asset group details
-            
+
         Example:
             >>> group = groups.get_group(42)
             >>> print(group['name'], len(group.get('assets', [])))
         """
         response = self.get(f'asset_groups/{group_id}')
         return response.json()
-    
+
     def create(
         self,
         name: str,
@@ -85,16 +85,16 @@ class AssetGroupAPI(BaseAPI):
     ) -> Dict[str, Any]:
         """
         Create a new asset group.
-        
+
         Args:
             name: Name of the asset group
             description: Description of the asset group
             search_criteria: Search criteria for dynamic groups
             group_type: Type of group ('dynamic' or 'static')
-        
+
         Returns:
             Dictionary containing the created group info with ID
-            
+
         Example:
             >>> group = groups.create(
             ...     name="Critical Assets",
@@ -114,16 +114,16 @@ class AssetGroupAPI(BaseAPI):
             'name': name,
             'type': group_type,
         }
-        
+
         if description:
             payload['description'] = description
-        
+
         if search_criteria:
             payload['searchCriteria'] = search_criteria
-        
+
         response = self.post('asset_groups', json=payload)
         return response.json()
-    
+
     def create_high_risk(
         self,
         name: str = "High Risk Assets",
@@ -132,18 +132,18 @@ class AssetGroupAPI(BaseAPI):
     ) -> Dict[str, Any]:
         """
         Create a high-risk asset group based on risk score.
-        
+
         This is a convenience method for creating a common type of
         asset group that identifies assets above a risk threshold.
-        
+
         Args:
             name: Name for the asset group
             threshold: Minimum risk score (default: 25000)
             description: Optional description
-        
+
         Returns:
             Dictionary containing the created group info
-            
+
         Example:
             >>> high_risk = groups.create_high_risk(
             ...     name="Critical Risk Assets",
@@ -155,7 +155,7 @@ class AssetGroupAPI(BaseAPI):
                 f"Assets with risk score greater than {threshold} "
                 "requiring immediate remediation."
             )
-        
+
         criteria = {
             'filters': [{
                 'field': 'risk-score',
@@ -164,13 +164,13 @@ class AssetGroupAPI(BaseAPI):
             }],
             'match': 'all'
         }
-        
+
         return self.create(
             name=name,
             description=description,
             search_criteria=criteria
         )
-    
+
     def update(
         self,
         group_id: int,
@@ -180,16 +180,16 @@ class AssetGroupAPI(BaseAPI):
     ) -> Dict[str, Any]:
         """
         Update an existing asset group.
-        
+
         Args:
             group_id: The asset group ID
             name: New name (optional)
             description: New description (optional)
             search_criteria: New search criteria (optional)
-        
+
         Returns:
             Dictionary confirming the update
-            
+
         Example:
             >>> groups.update(
             ...     group_id=42,
@@ -198,37 +198,37 @@ class AssetGroupAPI(BaseAPI):
         """
         # Get current group to preserve unmodified fields
         current = self.get_group(group_id)
-        
+
         payload = {
             'name': name or current.get('name'),
             'type': current.get('type', 'dynamic'),
         }
-        
+
         if description is not None:
             payload['description'] = description
         elif 'description' in current:
             payload['description'] = current['description']
-        
+
         if search_criteria is not None:
             payload['searchCriteria'] = search_criteria
         elif 'searchCriteria' in current:
             payload['searchCriteria'] = current['searchCriteria']
-        
+
         response = self.put(f'asset_groups/{group_id}', json=payload)
         return response.json()
-    
+
     def delete_group(self, group_id: int) -> None:
         """
         Delete an asset group.
-        
+
         Args:
             group_id: The asset group ID to delete
-            
+
         Example:
             >>> groups.delete_group(42)
         """
         self.delete(f'asset_groups/{group_id}')
-    
+
     def get_assets(
         self,
         group_id: int,
@@ -237,15 +237,15 @@ class AssetGroupAPI(BaseAPI):
     ) -> Dict[str, Any]:
         """
         Get assets belonging to a specific group.
-        
+
         Args:
             group_id: The asset group ID
             page: Page number (0-indexed)
             size: Number of assets per page
-        
+
         Returns:
             Dictionary containing assets in the group
-            
+
         Example:
             >>> assets = groups.get_assets(42)
             >>> for asset in assets['resources']:
@@ -254,51 +254,51 @@ class AssetGroupAPI(BaseAPI):
         params = {'page': page, 'size': size}
         response = self.get(f'asset_groups/{group_id}/assets', params=params)
         return response.json()
-    
+
     def add_asset(self, group_id: int, asset_id: int) -> Dict[str, Any]:
         """
         Add an asset to a static asset group.
-        
+
         Note: This only works for static groups, not dynamic groups.
-        
+
         Args:
             group_id: The asset group ID
             asset_id: The asset ID to add
-        
+
         Returns:
             Dictionary confirming the operation
-            
+
         Example:
             >>> groups.add_asset(group_id=42, asset_id=12345)
         """
         response = self.put(f'asset_groups/{group_id}/assets/{asset_id}')
         return response.json()
-    
+
     def remove_asset(self, group_id: int, asset_id: int) -> None:
         """
         Remove an asset from a static asset group.
-        
+
         Note: This only works for static groups, not dynamic groups.
-        
+
         Args:
             group_id: The asset group ID
             asset_id: The asset ID to remove
-            
+
         Example:
             >>> groups.remove_asset(group_id=42, asset_id=12345)
         """
         self.delete(f'asset_groups/{group_id}/assets/{asset_id}')
-    
+
     def search_tags(self, group_id: int) -> Dict[str, Any]:
         """
         Get search criteria tags for an asset group.
-        
+
         Args:
             group_id: The asset group ID
-        
+
         Returns:
             Dictionary containing tag search criteria
-            
+
         Example:
             >>> tags = groups.search_tags(42)
         """

@@ -60,7 +60,7 @@ class SonarQueryAPI(BaseAPI):
             "name": name,
             "criteria": {"filters": filters}
         }
-        
+
         if description:
             payload["description"] = description
 
@@ -124,7 +124,7 @@ class SonarQueryAPI(BaseAPI):
             Dict containing the updated query details
         """
         payload: Dict[str, Any] = {}
-        
+
         if name:
             payload["name"] = name
         if filters:
@@ -174,7 +174,7 @@ class SonarQueryAPI(BaseAPI):
             {"type": "domain-contains", "domain": domain},
             {"type": "scan-date-within-the-last", "days": days}
         ]
-        
+
         query_name = name or domain
         return self.create_sonar_query(query_name, filters)
 
@@ -215,6 +215,6 @@ class SonarQueryAPI(BaseAPI):
             },
             {"type": "scan-date-within-the-last", "days": days}
         ]
-        
+
         query_name = name or f"{lower_ip}-{upper_ip}"
         return self.create_sonar_query(query_name, filters)
