@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8676b480eff04517b65bc3bfcfeaea9a)](https://app.codacy.com/gh/talltechy/insightvm-python/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-A modern Python client library for Rapid7 InsightVM and Palo Alto Cortex XDR APIs. Built with industry-standard patterns, comprehensive type hints, and a clean, intuitive interface.
+A modern Python client library for Rapid7 InsightVM API. Built with industry-standard patterns, comprehensive type hints, and a clean, intuitive interface.
 
 ## ✨ Features
 
@@ -471,7 +471,6 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 - [Official Rapid7 InsightVM API](https://help.rapid7.com/insightvm/en-us/api/index.html)
 - [Official Rapid7 InsightVM API Examples](https://github.com/rapid7/insightvm-api-examples)
-- [Palo Alto Cortex XDR API](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-API-Reference/APIs-Overview)
 
 ## 📝 License
 
