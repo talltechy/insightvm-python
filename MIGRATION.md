@@ -125,7 +125,47 @@ results = client.assets.search(criteria)
 all_assets = client.assets.get_all(batch_size=500)
 ```
 
-### 5. Migrate Asset Group Operations
+### 5. Migrate Scan Engines API Operations
+
+**v1.0 - Function-based (Not present in v1.0):**
+```python
+# Scan Engines were not available in v1.0
+```
+
+**v2.0 - Client methods with updated names:**
+```python
+from rapid7 import InsightVMClient
+
+client = InsightVMClient()
+
+# Get engine details (METHOD NAME CHANGED)
+engine = client.scan_engines.get_engine(engine_id=6)  # Was: .get()
+
+# Update engine (METHOD NAME CHANGED)
+result = client.scan_engines.update_engine(
+    engine_id=6,
+    name="New Name"
+)  # Was: .update()
+
+# Delete engine (METHOD NAME CHANGED)
+result = client.scan_engines.delete_engine(engine_id=6)  # Was: .delete()
+
+# Other methods remain unchanged
+pools = client.scan_engines.list_pools()
+summary = client.scan_engines.get_engine_summary(engine_id=6)
+```
+
+**⚠️ Breaking Change in v2.0.x:** Three scan engine methods were renamed to avoid conflicts with the parent `BaseAPI` class methods:
+
+| Old Method | New Method | Reason |
+|-----------|-----------|---------|
+| `get(engine_id)` | `get_engine(engine_id)` | Conflicted with `BaseAPI.get(endpoint, ...)` |
+| `update(engine_id, ...)` | `update_engine(engine_id, ...)` | Consistency with `get_engine` |
+| `delete(engine_id)` | `delete_engine(engine_id)` | Conflicted with `BaseAPI.delete(endpoint, ...)` |
+
+**Why this change?** The original method names violated the Liskov Substitution Principle by overriding parent class methods with incompatible signatures. The new names are more explicit and prevent inheritance issues.
+
+### 6. Migrate Asset Group Operations
 
 **v1.0 - Function-based:**
 ```python
