@@ -28,13 +28,19 @@ ivm_username=myuser
 ivm_password=mypass
 ```
 
-**v2.0 `.env` format:**
+**v2.0 `.env` format (DO NOT HARD-CODE SECRETS):**
+Provide these variables via environment or a secret manager. Example usages in docs should reference env vars (e.g. `os.getenv(...)`) and must never include real credential values.
+
 ```bash
-INSIGHTVM_API_USERNAME=myuser
-INSIGHTVM_API_PASSWORD=mypass
-INSIGHTVM_BASE_URL=https://192.168.10.190:3780
-INSIGHTVM_VERIFY_SSL=false  # if using self-signed certificates
+# INSIGHTVM_API_USERNAME  (string) - set in env or secret manager
+# INSIGHTVM_API_PASSWORD  (secret) - store in secret manager; do NOT commit
+# INSIGHTVM_BASE_URL      (string) - full console URL, e.g. https://console.example:3780
+# INSIGHTVM_VERIFY_SSL    (bool)   - default true; set to false only for trusted self-signed certs
 ```
+
+**Security note:** Use CI secrets or an external secret manager (GitHub Secrets, AWS Secrets Manager, Azure Key Vault, etc.) for production; do not store credentials in the repository.
+
+**Copilot guidance:** When using GitHub Copilot to generate or edit code that interacts with authentication or configuration, consult `.github/copilot-instructions.md` for repository-specific guidance on secrets, environment variables, and example generation. Do not add real credentials or sensitive values to code or documentation.
 
 **Migration script for .env:**
 ```bash

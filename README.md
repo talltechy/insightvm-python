@@ -41,17 +41,23 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Create a `.env` file in the project root (see `.env.example` for template):
+Create a `.env` file in the project root (see `.env.example` for template).
+
+Do NOT commit real credentials. Use `.env.example` as a template for local development only, and use your platform's secret manager (GitHub Secrets, AWS Secrets Manager, Azure Key Vault, etc.) for CI and production settings.
+
+Example placeholders (do not commit real values):
 
 ```bash
-# Rapid7 InsightVM API
-INSIGHTVM_API_USERNAME=your_username
-INSIGHTVM_API_PASSWORD=your_password
+# Rapid7 InsightVM API (placeholders - DO NOT COMMIT)
+INSIGHTVM_API_USERNAME=<INSIGHTVM_API_USERNAME>
+INSIGHTVM_API_PASSWORD=<INSIGHTVM_API_PASSWORD>
 INSIGHTVM_BASE_URL=https://your-console:3780
 
 # SSL Configuration (optional)
-INSIGHTVM_VERIFY_SSL=false  # Set to false for self-signed certificates
+INSIGHTVM_VERIFY_SSL=false  # Set to false only for trusted development/testing environments
 ```
+
+See `.github/copilot-instructions.md` for Copilot-specific guidance on generating examples and handling secrets safely.
 
 ### Basic Usage
 
@@ -291,6 +297,15 @@ except requests.exceptions.RequestException as e:
 - **Secret Management** - Use `.env` for development, secret management services for production
 - **HTTPBasicAuth** - Industry-standard authentication pattern
 - **Timeout Configuration** - Prevent hanging connections
+
+### Secrets Policy
+
+This project enforces a strict secrets policy to avoid accidental credential leaks:
+
+- Never store API keys, passwords, tokens, or private keys in the repository or documentation examples.
+- Examples should reference environment variables or secret manager usage (e.g. `os.getenv('INSIGHTVM_API_PASSWORD')`) and use placeholders such as `<INSIGHTVM_API_PASSWORD>` when needed.
+- For development, use a local `.env` (gitignored). For CI and production, use a secret manager (GitHub Secrets, AWS Secrets Manager, Azure Key Vault, etc.).
+- See `.github/copilot-instructions.md` for additional guidance used by GitHub Copilot when generating or editing code.
 
 ### Security Considerations
 
