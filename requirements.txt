@@ -2,7 +2,7 @@
 
 # HTTP and API Communication
 requests>=2.32.4
-urllib3>=2.0.0
+urllib3>=2.5.0
 
 # Configuration and Environment
 python-dotenv>=1.0.0
