@@ -308,6 +308,7 @@ Verified against Context7 documentation (scan-engine-endpoints.md):
 
 **Note:** This module hardcodes the full endpoint path `/api/3/vulnerability_exceptions` instead of using the base URL building. This is consistent and works correctly.
 
+**Recommendation:** For improved maintainability and consistency, consider standardizing endpoint construction across all modules by using a shared base URL builder or endpoint construction utility. This will make it easier to update base paths or API versions in the future and reduce the risk of inconsistencies.
 **No issues found.**
 
 ---
