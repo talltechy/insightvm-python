@@ -30,7 +30,7 @@ jobs:
             - Provide the Python version and the version of the package you are using.
             - Attach logs or a minimal reproduction when possible.
 
-            For security-sensitive reports, see /SECURITY.md. See also /CONTRIBUTING.md and /README.md.
+            For security-sensitive reports, see SECURITY.md. See also CONTRIBUTING.md and README.md.
           pr-message: |
             Hi @${{ github.actor }} 👋
 
