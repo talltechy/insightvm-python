@@ -17,6 +17,7 @@ memory-bank/*
 /memory-bank/
 # Pycharm
 venv/*
+.venv/
 
 ### Backup ###
 *.bak
