@@ -37,7 +37,7 @@ jobs:
             Thanks for your first pull request to insightvm-python! We appreciate your contribution.
 
             A few quick reminders to help speed up review:
-            - Follow the contribution guide: ./CONTRIBUTING.md
+            - Follow the contribution guide: CONTRIBUTING.md
             - Add or update tests under the `tests/` directory and run them with `pytest`.
             - Run formatting and linters (pre-commit / black / isort / flake8) locally before pushing.
             - Update `CHANGELOG.md` if the change affects public behaviour or user-facing APIs.
